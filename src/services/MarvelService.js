@@ -13,14 +13,36 @@ class MarvelService{
         return await res.json();
     }
 
-    getAllCharacters=()=>{
-        return this.getRecource(`${this._apibase}characters?limit=9&offset=210&${this._apikey}`);
+    getAllCharacters= async ()=>{
+        const res = await this.getRecource(`${this._apibase}characters?limit=9&offset=210&${this._apikey}`);
+        return res.data.results.map(this._transformChar);
     }
 
-    getCharacter=(id)=>{
-        return this.getRecource(`${this._apibase}characters/${id}?${this._apikey}`);
+    getCharacter= async (id)=>{
+        const res = await this.getRecource(`${this._apibase}characters/${id}?${this._apikey}`);
+        return this._transformChar(res.data.results[0]);
     }
-
+    _transformChar=(char)=>{
+        let charDescription=null;
+        let cdl=char.description.length;
+        if(cdl==0){
+            charDescription='К сожалению, описание к данному Герою отсутсвует';
+        }
+        if(cdl>=240){
+            charDescription=`${char.description.slice(0,239)}...`;
+        }
+        if(cdl>0&&cdl<30){
+            charDescription=char.description;
+        }
+        
+        return  {
+            name:char.name,
+            description:charDescription,
+            thumbnail:char.thumbnail.path + '.' + char.thumbnail.extension,
+            homepage: char.urls[0].url,
+            wiki: char.urls[1].url
+        };
+    }
 }
 
 export default MarvelService;
