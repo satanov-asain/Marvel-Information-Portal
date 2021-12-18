@@ -33,6 +33,14 @@ class RandomChar extends Component {
             .then(this.onCharLoaded)
             .catch(this.onError)
     }
+    updateTryChar=()=>{
+        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
+        this.marvelService
+            .getCharacter(id)
+            .then(this.setState({loading:true}))
+            .then(this.onCharLoaded)
+            .catch(this.onError)
+    }
 
     onError=()=>{
         this.setState({
@@ -44,9 +52,10 @@ class RandomChar extends Component {
     render(){
         const {char, loading,error} = this.state;
 
+       
         const errorMessage= error?<ErrorMessage/>:null;
         const spinner = loading?<Spinner/>:null;
-        const content = !(error||loading)?<View char={char}/>:null;
+        const content = !(error||loading)?<View char={char} />:null;
         return (
             <div className="randomchar">
                {errorMessage}
@@ -60,7 +69,8 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    <button className="button button__main"
+                            onClick={this.updateTryChar}>
                         <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -90,7 +100,7 @@ const View = ({char})=>{
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
                     {description}
-                    {console.log(char.resChar)}
+                    
                 </p>
             <div className="randomchar__btns">
             <a href={homepage} className="button button__main">

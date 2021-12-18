@@ -28,10 +28,10 @@ class MarvelService{
         if(cdl==0){
             charDescription='К сожалению, описание к данному Герою отсутсвует';
         }
-        if(cdl>=240){
-            charDescription=`${char.description.slice(0,239)}...`;
+        if(cdl>=200){
+            charDescription=`${char.description.slice(0,199)}...`;
         }
-        if(cdl>0&&cdl<30){
+        if(cdl>0&&cdl<200){
             charDescription=char.description;
         }
         
@@ -42,7 +42,7 @@ class MarvelService{
             thumbnailName:char.thumbnail.path,
             homepage: char.urls[0].url,
             wiki: char.urls[1].url,
-            resChar: char
+            
         };
     }
 }
