@@ -17,37 +17,32 @@ class RandomChar extends Component {
        error: false
     }
     marvelService= new MarvelService(); 
-
+   
+    updateChar=()=>{
+        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
+        this.onCharLoading();
+        this.marvelService
+            .getCharacter(id)
+            .then(this.onCharLoaded)
+            .catch(this.onError)
+    }
+   
     componentDidMount(){
         this.updateChar();
     }
-
+    onCharLoading=()=>{
+        this.setState({loading:true})
+    }
     onCharLoaded=(char)=>{
         this.setState({char, loading:false});
     }
-
-    updateChar=()=>{
-        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
-        this.marvelService
-            .getCharacter(id)
-            .then(this.onCharLoaded)
-            .catch(this.onError)
-    }
-    updateTryChar=()=>{
-        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
-        this.marvelService
-            .getCharacter(id)
-            .then(this.setState({loading:true}))
-            .then(this.onCharLoaded)
-            .catch(this.onError)
-    }
-
     onError=()=>{
         this.setState({
             loading:false,
             error:true
         })
     }
+
 
     render(){
         const {char, loading,error} = this.state;
@@ -70,7 +65,7 @@ class RandomChar extends Component {
                         Or choose another one
                     </p>
                     <button className="button button__main"
-                            onClick={this.updateTryChar}>
+                            onClick={this.updateChar}>
                         <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
@@ -92,6 +87,18 @@ const View = ({char})=>{
     else{ imgStyle={width: "180px",
     height: "180px",
     objectFit: "cover"};}
+
+    let charDescription=null;
+    let cdl=char.description.length;
+    if(cdl==0){
+        charDescription='К сожалению, описание к данному Герою отсутсвует';
+    }
+    if(cdl>=200){
+        charDescription=`${char.description.slice(0,199)}...`;
+    }
+    if(cdl>0&&cdl<200){
+        charDescription=char.description;
+    }
    
     return(
         <div className="randomchar__block">
@@ -99,7 +106,7 @@ const View = ({char})=>{
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
-                    {description}
+                    {charDescription}
                     
                 </p>
             <div className="randomchar__btns">
