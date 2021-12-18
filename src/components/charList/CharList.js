@@ -1,5 +1,7 @@
 import { Component } from 'react';
 import MarvelService from '../../services/MarvelService';
+import ErrorMessage from '../errorMessage/ErrorMessage';
+import Spinner from '../spinner/Spinner';
 
 import './charList.scss';
 import abyss from '../../resources/img/abyss.jpg';
@@ -28,9 +30,15 @@ class CharList extends Component {
         this.setState({charList, loading:false});
     
     }
+    onError=()=>{
+        this.setState({
+            loading:false,
+            error:true
+        })
+    }
     
     render(){
-        const {charList}=this.state;
+        const {charList,error,loading}=this.state;
        const charItems=charList.map(item=>{
 
         let imgStyle=''
@@ -53,46 +61,16 @@ class CharList extends Component {
           </li>
           )
        })
+
+       const errorMessage= error?<ErrorMessage/>:null;
+       const spinner = loading?<Spinner/>:null;
+       const content = !(error||loading)?charItems:null;
         return (
             <div className="char__list">
                 <ul className="char__grid">
-                    {charItems}
-                    {/* <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item char__item_selected">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li> */}
+                    {errorMessage}
+                    {spinner}
+                    {content}
                 </ul>
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
