@@ -1,45 +1,34 @@
+import useHttp from "../hooks/http.hooks";
 
+const useMarvelService=()=>{
+    const _apiBase='https://gateway.marvel.com:443/v1/public/';
+    const _apiKey='apikey=531082be7ba2891c77469570d4d4606b';
+    const _baseOffsetChars=210;
+    const{loading, error, request, clearError }=useHttp();
 
-class MarvelService{
-    _apibase='https://gateway.marvel.com:443/v1/public/';
-    _apikey='apikey=531082be7ba2891c77469570d4d4606b';
-    _baseOffsetChars=210;
-    getRecource= async (url) =>{
-        let res= await fetch(url);
-
-        if(!res.ok){
-            throw new Error(`Cannor fetch ${url}, status: ${res.status}`); 
-        }
-
-        return await res.json();
+    const getAllCharacters= async (offset=_baseOffsetChars)=>{
+        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
+        return res.data.results.map(_transformChar);
     }
 
-    getAllCharacters= async (offset=this._baseOffsetChars)=>{
-        const res = await this.getRecource(`${this._apibase}characters?limit=9&offset=${offset}&${this._apikey}`);
-        return res.data.results.map(this._transformChar);
+    const getCharacter= async (id)=>{
+        const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
+        return _transformChar(res.data.results[0]);
+    }
+    const getAllComics= async (offset=_baseOffsetChars)=>{
+        const res = await request(`${_apiBase}comics?orderBy=issueNumber&limit=8&offset=${offset}&${_apiKey}`);
+        return res.data.results.map(_transformComics);
     }
 
-    getCharacter= async (id)=>{
-        const res = await this.getRecource(`${this._apibase}characters/${id}?${this._apikey}`);
-        return this._transformChar(res.data.results[0]);
-    }
-    _transformChar=(char)=>{
-        let charDescription=null;
-        let cdl=char.description.length;
-        if(cdl==0){
-            charDescription='К сожалению, описание к данному Герою отсутсвует';
-        }
-        if(cdl>=200){
-            charDescription=`${char.description.slice(0,199)}...`;
-        }
-        if(cdl>0&&cdl<200){
-            charDescription=char.description;
-        }
-        
-        return  {
+    const getComic= async (id)=>{
+        const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
+        return _transformComics(res.data.results[0]);
+    }    
+    const _transformChar=(char)=>{
+            return  {
             id:char.id,
             name:char.name,
-            description:charDescription,
+            description:char.description ? `${char.description.slice(0, 210)}...` : 'К сожалению, описание к данному Герою отсутсвует',
             thumbnail:char.thumbnail.path + '.' + char.thumbnail.extension,
             thumbnailName:char.thumbnail.path,
             homepage: char.urls[0].url,
@@ -48,6 +37,20 @@ class MarvelService{
             
         };
     }
+    const _transformComics=(comics)=>{
+        return  {
+        id:comics.id,
+        title:comics.title,
+        description:comics.description || 'There is no description',
+        pageCount: comics.pageCount ? `${comics.pageCount} p.` : 'No information about the number of pages',
+        thumbnail:comics.thumbnail.path + '.' + comics.thumbnail.extension,
+        language: comics.textObjects.language || 'en-us',
+        price: comics.prices.price ? `${comics.prices.price}$` : 'not available'
+        
+        };
+    }
+
+    return{loading,error, clearError, getCharacter, getAllCharacters, getComic, getAllComics};
 }
 
-export default MarvelService;
+export default useMarvelService;

@@ -1,46 +1,34 @@
 import { useState, useEffect} from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage.js';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import './randomChar.scss';
 
 import mjolnir from '../../resources/img/mjolnir.png';
 
 const RandomChar=()=>{
     const [char,setChar]=useState({});
-    const [loading,setLoading]=useState(true);
-    const [error,setError]=useState(false);
-
-    const marvelService= new MarvelService(); 
+    const {loading, error ,getCharacter , clearError}=useMarvelService();
+    
    
     const updateChar=()=>{
+        clearError();
         const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
-            onCharLoading();
-            marvelService
-            .getCharacter(id)
-            .then(onCharLoaded)
-            .catch(onError)
+        getCharacter(id)
+        .then(onCharLoaded);
     }
 
     useEffect(()=>{
         updateChar();
-        const timerId = setInterval(updateChar, 10000);
-
+        const timerId = setInterval(updateChar(), 60000);
         return () => {
             clearInterval(timerId)
         }
     },[]);
 
-    const onCharLoading=()=>{
-        setLoading(loading=>true);
-    }
     const onCharLoaded=(char)=>{
         setChar(char);
-        setLoading(false);
-    }
-    const onError=()=>{
-        setLoading(false);
-        setError(true);
+
     }
 
    
@@ -74,17 +62,8 @@ const RandomChar=()=>{
 const View = ({char})=>{
     const {name,description,thumbnail,thumbnailName,homepage,wiki}=char;
     
-    let imgStyle=''
-    if(thumbnailName.slice(-19).includes('image_not_available')){
-        imgStyle={width: "180px",
-        height: "180px",
-        objectFit: "contain"};
-    }
-    else{ imgStyle={width: "180px",
-    height: "180px",
-    objectFit: "cover"};}
-
-
+    let imgStyle=/image_not_available'/.test(thumbnail)?
+        {'objectFit':'contain'}:{'objectFit':'cover'};
    
     return(
         <div className="randomchar__block">

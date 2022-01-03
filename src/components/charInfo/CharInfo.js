@@ -2,7 +2,7 @@ import { useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Skeleton from '../skeleton/Skeleton.js'
 
 import './charInfo.scss';
@@ -10,8 +10,7 @@ import thor from '../../resources/img/thor.jpeg';
 
 const CharInfo=(props)=>{
     const [char,setChar]=useState(null);
-    const [loading,setLoading]=useState(false);
-    const [error,setError]=useState(false);
+    const {loading,error, clearError, getCharacter}=useMarvelService();
     useEffect(()=>{
         updateCharInfo();
     },[]);
@@ -20,36 +19,19 @@ const CharInfo=(props)=>{
             updateCharInfo();
         },[props.charId])
 
-    const marvelService = new MarvelService();
+
 
     const updateCharInfo=()=>{
+        clearError();
         const {charId}=props;
         if(!charId){return;}
-
-        onCharLoading();
-        marvelService
-        .getCharacter(charId)
+        getCharacter(charId)
         .then(onCharLoaded)
-        .catch(onError)
-
-        
     }
 
-    const onCharLoading=()=>{
-        setLoading(true);
-    }
     const onCharLoaded=(char)=>{
         setChar(char);
-        setLoading(false);
     }
-
-    const onError=()=>{
-        setLoading(false);
-        setError(true);
-    }
-
-    
-
     
     const skeleton=char||error||loading? null:<Skeleton/>;
     const errorMessage=error?<ErrorMessage/>:null;
@@ -70,10 +52,8 @@ const CharInfo=(props)=>{
 const View =({char})=>{
 
     const {name,description,thumbnail,homepage,wiki,comics}=char;
-    let imgStyle = {'objectFit' : 'cover'};
-    if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
-        imgStyle = {'objectFit' : 'unset'};
-    }
+    let imgStyle=/image_not_available'/.test(thumbnail)?
+        {'objectFit':'contain'}:{'objectFit':'cover'};
     return(
         <>
             <div className="char__basics">
