@@ -19,8 +19,6 @@ const CharInfo=(props)=>{
             updateCharInfo();
         },[props.charId])
 
-
-
     const updateCharInfo=()=>{
         clearError();
         const {charId}=props;
@@ -57,36 +55,36 @@ const View =({char})=>{
     return(
         <>
             <div className="char__basics">
-                    <img src={thumbnail} style={imgStyle} alt={name}/>
-                    <div>
-                        <div className="char__info-name">{name}</div>
-                        <div className="char__btns">
-                            <a href={homepage} className="button button__main">
-                                <div className="inner">homepage</div>
-                            </a>
-                            <a href={wiki} className="button button__secondary">
-                                <div className="inner">Wiki</div>
-                            </a>
-                        </div>
+                <img src={thumbnail} style={imgStyle} alt={name}/>
+                <div>
+                    <div className="char__info-name">{name}</div>
+                    <div className="char__btns">
+                        <a href={homepage} className="button button__main">
+                            <div className="inner">homepage</div>
+                        </a>
+                        <a href={wiki} className="button button__secondary">
+                            <div className="inner">Wiki</div>
+                        </a>
                     </div>
                 </div>
-                <div className="char__descr">
-                    {description}
-                </div>
-                <div className="char__comics">Comics:</div>
-                <ul className="char__comics-list">
-                   {comics.length>0?null:"К сожалению комиксы по данному персонажу отсутсвуют"}
-                   {
-                       comics.map((item,i)=>{
-                           if(i>9) return;
-                           return(
-                            <li className="char__comics-item" key ={i}>
-                                {item.name}
-                            </li>
-                           )
-                       })
-                   }
-                </ul>
+            </div>
+            <div className="char__descr">
+                {description}
+            </div>
+            <div className="char__comics">Comics:</div>
+            <ul className="char__comics-list">
+                {comics.length>0?null:"К сожалению комиксы по данному персонажу отсутсвуют"}
+                {
+                    comics.map((item,i)=>{
+                        if(i>9) return;
+                        return(
+                        <li className="char__comics-item" key ={i}>
+                            {item.name}
+                        </li>
+                        )
+                    })
+                }
+            </ul>
         </>
     )
 }

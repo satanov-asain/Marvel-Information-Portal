@@ -1,46 +1,42 @@
 import {useState,useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import useMarvelService from '../../services/MarvelService';
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
 
 import './charList.scss';
 
 const CharList=(props)=> {
+    const {loading,error, getAllCharacters,clearError} = useMarvelService();
 
     const [charList,setCharList]=useState([]);
     const [newItemsLoading,setNewItemsLoading]=useState(false);
     const [offset,setOffset]=useState(210);
     const [charEnded,setCharEnded]=useState(false);
-    const {loading,error, getAllCharacters,clearError} = useMarvelService();
 
     useEffect(()=>{onRequest(offset, true)
     },[]);
     
-
-  
     const onRequest=(offset,initial)=>{
         clearError();
         setNewItemsLoading(initial?false:true);
         getAllCharacters(offset)
         .then(onCharListLoaded)
-
     }
 
     const onCharListLoaded=(newCharList)=>{
         let ended = false;
-        if(newCharList.length<9){ ended=true;}
+        if(newCharList.length<9){ended=true;}
 
         setCharList(charList=>[...charList, ...newCharList]);
         setNewItemsLoading(false);
         setOffset(offset=>offset+9);
-        setCharEnded(charEnded=>ended);
-    
+        setCharEnded(ended);   
     }
 
     const itemRefs = useRef([]);
-
-    
+   
     const focusOnItem = (id) => {
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
@@ -53,30 +49,33 @@ const CharList=(props)=> {
             {'objectFit':'contain'}:{'objectFit':'cover'};
             
             return (
-                <li 
-                    className="char__item"
-                    key={item.id}
-                    tabIndex={0}
-                    ref={elem=>itemRefs.current[i]=elem}
-                    onClick={()=>{props.onSelectedChar(item.id);
-                                  focusOnItem(i);}}
-
-                    onKeyPress={(e) => {
-                    if (e.key === ' ' || e.key === "Enter") {
-                        props.onCharSelected(item.id);
-                        focusOnItem(i);
-                        }
-                    }}                    
-                    >
+                <CSSTransition key={item.id} timeout={500} classNames='char__item'>
+                    <li 
+                        className="char__item"
+                        key={item.id}
+                        tabIndex={0}
+                        ref={elem=>itemRefs.current[i]=elem}
+                        onClick={()=>{props.onSelectedChar(item.id);
+                                    focusOnItem(i);}}
+                        onKeyPress={(e) => {
+                        if (e.key === ' ' || e.key === "Enter") {
+                            props.onCharSelected(item.id);
+                            focusOnItem(i);
+                            }
+                        }}                    
+                        >
                         <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                         <div className="char__name">{item.name}</div>
-                </li>
+                    </li>
+                </CSSTransition>
             )
         });
         // А эта конструкция вынесена для центровки спиннера/ошибки
         return (
             <ul className="char__grid">
-                {items}
+                <TransitionGroup component={null}>
+                    {items}
+                </TransitionGroup>
             </ul>
         )
     }
@@ -88,11 +87,9 @@ const CharList=(props)=> {
 
         return (
             <div className="char__list">
-                
-                    {errorMessage}
-                    {spinner}
-                    {items}
-                
+                {errorMessage}
+                {spinner}
+                {items}               
                 <button className="button button__main button__long"
                         disabled={newItemsLoading}
                         style={{'display': charEnded?'none':'block'}}
@@ -101,8 +98,6 @@ const CharList=(props)=> {
                 </button>
             </div>
         )
-    
-   
 }
 
 CharList.propTypes={
