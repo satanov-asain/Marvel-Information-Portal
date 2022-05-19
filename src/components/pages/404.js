@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import img from './catty.jpg';
+import img from '../../resources/img/notfound.jpg';
 const Page404=()=>{
     return(
         <div>

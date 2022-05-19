@@ -7,8 +7,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    
 }
-
+body{
+    background:$my-gradient;
+}
 ul,
 li,
 dl {
@@ -57,6 +60,7 @@ input::-webkit-inner-spin-button {
         right: -174px;
         bottom: -70px;
         z-index: -1;
+        
     }
 }
 

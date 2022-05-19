@@ -4,7 +4,8 @@ import './appHeader.scss';
 const AppHeader = () => {
     return (
         <header className="app__header">
-            <h1 className="app__title">
+            <h1 className="app__title"
+                name="Marvel information portal">
                 <Link to="/">
                     <span>Marvel</span> information portal
                 </Link>
@@ -13,11 +14,11 @@ const AppHeader = () => {
                 <ul>
                     <li><NavLink end 
                     style={({isActive})=>({color:isActive?'#9F0013':'inherit'})}
-                    to="/">Characters</NavLink></li>
+                    to="/"><span>Characters</span></NavLink></li>
                     /
                     <li><NavLink 
                     style={({isActive})=>({color:isActive?'#9F0013':'inherit'})}
-                    to="/comics">Comics</NavLink></li>
+                    to="/comics"><span>Comics</span></NavLink></li>
                 </ul>
             </nav>
         </header>
