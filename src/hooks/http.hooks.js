@@ -13,7 +13,7 @@ const useHttp=()=>{
             if(!res.ok){
                 throw new Error(`Cannot fetch ${url}. Status ${res.status}`)
             }
-            const data= await res.json();
+            const data = await res.json();
             setLoading(false);
             return data;
         }
@@ -25,7 +25,7 @@ const useHttp=()=>{
         }
     },[])
 
-    const clearError=useCallback(()=>{
+    const clearError = useCallback(()=>{
         setError(false);
     },[])
 
@@ -33,7 +33,6 @@ const useHttp=()=>{
             process, setProcess, 
             request, 
             clearError};
-  
 }
 
 export default useHttp;

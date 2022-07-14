@@ -67,9 +67,11 @@ const View =({data})=>{
                     </div>
                 </div>
             </div>
+
             <div className="char__descr">
                 {description}
             </div>
+
             <div className="char__comics">Comics:</div>
             <ul className="char__comics-list">
                 {comics.length>0?null:"К сожалению комиксы по данному персонажу отсутсвуют"}
@@ -77,7 +79,7 @@ const View =({data})=>{
                     comics.map((item,i)=>{
                         if(i>9) return;
                         return(
-                        <li className="char__comics-item" key ={i}>
+                        <li className="char__comics-item" key = {i}>
                             {item.name}
                         </li>
                         )
