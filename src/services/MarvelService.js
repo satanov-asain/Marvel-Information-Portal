@@ -7,7 +7,7 @@ const useMarvelService=()=>{
     const{loading, error, process, setProcess, request, clearError }=useHttp();
 
     const getAllCharacters= async (offset=_baseOffsetChars)=>{
-        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
+        const res = await request(`${_apiBase}сharacters?limit=9&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformChar);
     }
     const getCharacter= async (id)=>{
