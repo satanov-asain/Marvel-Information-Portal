@@ -5,10 +5,6 @@ import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
 
-import { useDispatch, useSelector} from 'react-redux';
-import { fetchCharInfo, changeCharId} from '../../store/charSlice';
-
-
 import './charList.scss';
 
 const setContent=(process, Component, newItemsLoading)=>{
@@ -27,11 +23,6 @@ const setContent=(process, Component, newItemsLoading)=>{
 }
 
 const CharList=(props)=> {
-    const dispatch = useDispatch();
-    const {charId, charLoadingStatus} = useSelector(state => state.char);
-
-    
-
     const {loading,error, process, setProcess, getAllCharacters,clearError} = useMarvelService();
 
     const [charList,setCharList]=useState([]);
@@ -62,9 +53,7 @@ const CharList=(props)=> {
 
     const itemRefs = useRef([]);
    
-    const focusOnItem = (id, itemId) => {
-        dispatch(changeCharId(itemId));
-        alert(charId);
+    const focusOnItem = (id) => {
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
         itemRefs.current[id].focus();
@@ -82,14 +71,12 @@ const CharList=(props)=> {
                         key={item.id}
                         tabIndex={0}
                         ref={elem=>itemRefs.current[i]=elem}
-                        // onClick={()=>dispatch(fetchCharInfo(item.id))}
-                        onClick={()=>{
-                            
-                            focusOnItem(i, item.id);}}
+                        onClick={()=>{props.onSelectedChar(item.id);
+                                    focusOnItem(i);}}
                         onKeyPress={(e) => {
                         if (e.key === ' ' || e.key === "Enter") {
-                           
-                            focusOnItem(i, item.id);
+                            props.onCharSelected(item.id);
+                            focusOnItem(i);
                             }
                         }}                    
                         >
@@ -108,10 +95,10 @@ const CharList=(props)=> {
             </ul>
         )
     }
-        // const elements=useMemo(()=>{
-        //     return setContent(process, ()=>renderItems(charList), newItemsLoading);
-        // },[process]);
-        const elements = renderItems(charList);
+        const elements=useMemo(()=>{
+            return setContent(process, ()=>renderItems(charList), newItemsLoading);
+        },[process]);
+        
         return (
             <div className="char__list">
                 {elements}    
@@ -130,5 +117,3 @@ CharList.propTypes={
 }
 
 export default CharList;
-
-

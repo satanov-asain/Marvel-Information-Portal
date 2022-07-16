@@ -2,22 +2,12 @@ import { useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
-import store from '../../store';
-import { fetchCharInfo } from '../../store/charSlice';
-
-import { useSelector, useDispatch } from "react-redux";
-
-
 
 import './charInfo.scss';
 
 const CharInfo=(props)=>{
     const [char,setChar]=useState(null);
     const {process, setProcess, clearError, getCharacter}=useMarvelService();
-
-    const {charId, charData, charLoadingStatus} = useSelector(state => state.char);
-    const dispatch = useDispatch();
-
     useEffect(()=>{
         updateCharInfo();
     },[]);
@@ -26,30 +16,15 @@ const CharInfo=(props)=>{
             updateCharInfo();
         },[props.charId])
 
-    useEffect(() => {
-        console.log(charLoadingStatus);
-        dispatch(fetchCharInfo(charId));
-        console.log(charLoadingStatus);
-        console.log(charData);
-        
-        updateCharInfo();
-    }, [charId])
-
-    // const updateCharInfo=()=>{
-    //     clearError();
-    //     const {charId}=props;
-    //     if(!charId){return;}
-    //     getCharacter(charId)
-    //     .then(onCharLoaded)
-    //     .then(()=>setProcess('confirmed'));
-    // }
-
-    const updateCharInfo= () => {
+    const updateCharInfo=()=>{
         clearError();
-        // if(!charId){return;}
-        // fetchCharInfo(charId);
-        setChar(charData);
+        const {charId}=props;
+        if(!charId){return;}
+        getCharacter(charId)
+        .then(onCharLoaded)
+        .then(()=>setProcess('confirmed'));
     }
+
     const onCharLoaded=(char)=>{
         setChar(char);
     }
@@ -61,7 +36,6 @@ const CharInfo=(props)=>{
 
     return (
         <div className="char__info">
-            {/* <View data = {char}/> */}
             {setContent(process, View, char)}
             {/* {skeleton}
             {errorMessage}
@@ -93,11 +67,9 @@ const View =({data})=>{
                     </div>
                 </div>
             </div>
-
             <div className="char__descr">
                 {description}
             </div>
-
             <div className="char__comics">Comics:</div>
             <ul className="char__comics-list">
                 {comics.length>0?null:"К сожалению комиксы по данному персонажу отсутсвуют"}
@@ -105,7 +77,7 @@ const View =({data})=>{
                     comics.map((item,i)=>{
                         if(i>9) return;
                         return(
-                        <li className="char__comics-item" key = {i}>
+                        <li className="char__comics-item" key ={i}>
                             {item.name}
                         </li>
                         )

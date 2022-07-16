@@ -5,15 +5,15 @@ const useHttp=()=>{
     let [error, setError]=useState(false);
     let [process, setProcess]=useState('waiting');
 
-    const request =async(url, method="GET", body=null, headers={"Content-Type":"application/json"})=>{
+    const request = useCallback(async(url, method="GET", body=null, headers={"Content-Type":"application/json"})=>{
         setLoading(true);
         setProcess('loading');
         try{
-            const res= await fetch(url);
+            const res= await fetch(url, {method, body, headers});
             if(!res.ok){
                 throw new Error(`Cannot fetch ${url}. Status ${res.status}`)
             }
-            const data = await res.json();
+            const data= await res.json();
             setLoading(false);
             return data;
         }
@@ -23,9 +23,9 @@ const useHttp=()=>{
             setProcess('error');
             throw e;
         }
-    }
+    },[])
 
-    const clearError = useCallback(()=>{
+    const clearError=useCallback(()=>{
         setError(false);
     },[])
 
@@ -33,6 +33,7 @@ const useHttp=()=>{
             process, setProcess, 
             request, 
             clearError};
+  
 }
 
 export default useHttp;
