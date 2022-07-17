@@ -4,26 +4,29 @@ import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
+import setContent  from '../../utils/setContent';
 
 import { useDispatch, useSelector } from 'react-redux/es/exports';
-import { fetchCharInfo, changeCharId, increment} from '../../redux/store/charSlice';
+import { fetchCharInfo, increment} from '../../redux/store/charSlice';
 
 import './charList.scss';
 
-const setContent=(process, Component, newItemsLoading)=>{
-    switch(process){
-        case 'waiting':
-            return <Spinner/>
-        case 'loading': 
-            return newItemsLoading? <Component/>:<Spinner/>;
-        case 'confirmed':
-            return <Component/>
-        case 'error':
-            return <ErrorMessage/>
-        default:
-            throw new Error('Unexpected process state');
-    }
-}
+// const setContent=(process, Component, newItemsLoading)=>{
+//     switch(process){
+//         case 'waiting':
+//             return <Spinner/>
+//         case 'loading': 
+//             return newItemsLoading? <Component/>:<Spinner/>;
+//         case 'confirmed':
+//             return <Component/>
+//         case 'error':
+//             return <ErrorMessage/>
+//         default:
+//             throw new Error('Unexpected process state');
+//     }
+// }
+
+const getContent = setContent('list');
 
 const CharList=(props)=> {
 
@@ -63,7 +66,6 @@ const CharList=(props)=> {
     const focusOnItem = (id, itemId) => {
         dispatch(increment(10));
         dispatch(fetchCharInfo(itemId));
-        dispatch(changeCharId(itemId));
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
         itemRefs.current[id].focus();
@@ -106,7 +108,7 @@ const CharList=(props)=> {
         )
     }
         const elements=useMemo(()=>{
-            return setContent(process, ()=>renderItems(charList), newItemsLoading);
+            return getContent(process, ()=>renderItems(charList), newItemsLoading);
         },[process]);
         
         return (

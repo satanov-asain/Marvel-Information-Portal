@@ -2,20 +2,30 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import store from ".";
 import { fetchMarvelService } from "../../services/MarvelService"; 
-
+const {fetchCharacter} = fetchMarvelService();
 
 export const fetchCharInfo = createAsyncThunk(
-    'char/fetch',
+    'char/fetchCharInfo',
     async (id) => {
-        const {fetchCharacter} = fetchMarvelService();
         return await fetchCharacter(id);
+    }
+)
 
+export const fetchRandomChar = createAsyncThunk(
+    'char/fetchRandomChar',
+    async (id) => {
+        return await fetchCharacter(id);
     }
 )
 const initialState = {
+    //state для CharInfo
     charData:null,
-    charId:1,
+    charId:0,
     charLoadingStatus:'idle',
+    //state для RandomChar
+    randomCharData:{},
+    randomCharId:0,
+    randomCharLoadingStatus:'idle',
     count:0
 }
 
@@ -29,10 +39,18 @@ const charSlice = createSlice({
     },
     extraReducers: builder => {
         builder
+        //Отработка загрузки для CharInfo
         .addCase(fetchCharInfo.pending, state => {state.charLoadingStatus = 'loading';})
-        .addCase(fetchCharInfo.fulfilled, (state, action) => {state.charLoadingStatus = 'idle';
-                                                           state.charData = action.payload ;})
+        .addCase(fetchCharInfo.fulfilled, (state, action) => {
+            state.charLoadingStatus = 'idle';
+            state.charData = action.payload ;})
         .addCase(fetchCharInfo.rejected, state => {state.charLoadingStatus = 'error';} )
+        //Отработка загрузки для RandomChar
+        .addCase(fetchRandomChar.pending, state => {state.randomCharLoadingStatus = 'loading';})
+        .addCase(fetchRandomChar.fulfilled, (state, action) => {
+            state.randomCharLoadingStatus = 'idle';
+            state.randomCharData = action.payload;})
+        .addCase(fetchRandomChar.rejected, state => {state.randomCharLoadingStatus = 'error'})
         .addDefaultCase(()=>{})
     }
 })

@@ -29,7 +29,7 @@ const _transformComics=(comics)=>{
 }
 
 const useMarvelService=()=>{
-    const{loading, error, process, setProcess, request, baseFetch, clearError }=useHttp();
+    const{loading, error, process, setProcess, request, clearError }=useHttp();
     const getAllCharacters= async (offset=_baseOffsetChars)=>{
         const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformChar);
@@ -60,7 +60,7 @@ const useMarvelService=()=>{
 
 export const fetchMarvelService = () => {
     const fetchCharacter = async (id) => {
-        const request2 = async(url, method="GET", body=null, headers={"Content-Type":"application/json"})=>{
+        const baseFetch = async(url, method="GET", body=null, headers={"Content-Type":"application/json"})=>{
             try{
                 const res= await fetch(url, {method, body, headers});
                 if(!res.ok){
@@ -74,7 +74,7 @@ export const fetchMarvelService = () => {
                 throw e;
             }
         }
-        const res = await request2(`${_apiBase}characters/${id}?${_apiKey}`);
+        const res = await baseFetch(`${_apiBase}characters/${id}?${_apiKey}`);
         return _transformChar(res.data.results[0]);
     }
     return{fetchCharacter};

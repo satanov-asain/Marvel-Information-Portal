@@ -1,19 +1,40 @@
 import { useState, useEffect, useDebugValue} from 'react';
 import PropTypes from 'prop-types';
-import useMarvelService from '../../services/MarvelService';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
+import Skeleton from '../skeleton/Skeleton';
 import setContent from '../../utils/setContent';
 
-import { useDispatch, useSelector } from 'react-redux/es/exports';
-import { fetchCharInfo } from '../../redux/store/charSlice';
+import { useSelector } from 'react-redux/es/exports';
 
 import './charInfo.scss';
 
+// const setContent=(status, Component, data)=>{
+//     switch(status){
+//         case 'idle':{
+//             return (!data
+//             ?<Skeleton/>
+//             :<Component data={data}/>)
+//         }
+//             break;
+//         case 'loading':
+//             return <Spinner/>
+//             break;
+//         case 'error':
+//             return <ErrorMessage/>
+//         default:
+//             throw new Error('Unexpected process state');
+//     }
+// }
+
+const getContent = setContent('single');
+
+
 const CharInfo = (props) => {
-    const dispatch = useDispatch();
-    const {charId, charData} = useSelector(state => state.char);
+
+    const {charData, charLoadingStatus} = useSelector(state => state.char);
 
     const [char,setChar]=useState(null);
-    const {process, setProcess, clearError, getCharacter} = useMarvelService();
 
     useEffect(()=>{
         updateCharInfo();
@@ -24,18 +45,8 @@ const CharInfo = (props) => {
         },[props.charId, charData])
 
     const updateCharInfo=()=>{
-        // clearError();
-        // const {charId}=props;
-        // if(!charId){return;}
-        // getCharacter(charId)
-        // .then(onCharLoaded)
-        // .then(()=>setProcess('confirmed'));
-        // console.log(charData);
-
-        clearError();
-        if(!charData){return;}
-        setProcess('confirmed');
-        setChar(charData);
+        if(!charData){return;}  
+        onCharLoaded(charData);
         
     }
 
@@ -48,9 +59,10 @@ const CharInfo = (props) => {
     // const spinner = loading?<Spinner/>:null;
     // const content = (!error&&!loading)&&char?<View char={char}/>:null;
 
+
     return (
         <div className="char__info">
-            {setContent(process, View, charData)}
+            {getContent(charLoadingStatus, View, char)}
             {/* {skeleton}
             {errorMessage}
             {spinner}
@@ -64,7 +76,7 @@ const View =({data})=>{
 
     const {name,description,thumbnail,homepage,wiki,comics}=data;
     let imgStyle=/image_not_available'/.test(thumbnail)?
-        {'objectFit':'unset'}:{'objectFit':'cover'};
+        {'objectFit':'contain'}:{'objectFit':'cover'};
     return(
         <>
             <div className="char__basics">

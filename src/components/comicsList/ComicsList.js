@@ -2,29 +2,33 @@ import {useState, useEffect, useRef} from 'react';
 import { Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
+
+import setContent from '../../utils/setContent';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
 
-const setContent=(process, Component, newItemsLoading)=>{
-    switch(process){
-        case 'waiting':
-            return <Spinner/>;
-            break;
-        case 'loading':
-            return newItemsLoading ? <Component/> : <Spinner/>;
-            break;
-        case 'confirmed':
-            return <Component/>;
-            break;
-        case 'error':
-            return <ErrorMessage/>
-            break;
-        default:
-            throw new Error('Unexpected process state');           
-    }
-}
+// const setContent=(process, Component, newItemsLoading)=>{
+//     switch(process){
+//         case 'waiting':
+//             return <Spinner/>;
+//             break;
+//         case 'loading':
+//             return newItemsLoading ? <Component/> : <Spinner/>;
+//             break;
+//         case 'confirmed':
+//             return <Component/>;
+//             break;
+//         case 'error':
+//             return <ErrorMessage/>
+//             break;
+//         default:
+//             throw new Error('Unexpected process state');           
+//     }
+// }
+
+const getContent = setContent('list');
 
 const ComicsList = () => {
     const [comicsList, setComicsList] = useState([]);
@@ -82,7 +86,7 @@ const ComicsList = () => {
 
     return (
         <div className="comics__list">
-            {setContent(process, ()=>renderItems(comicsList), newItemsLoading)}
+            {getContent(process, ()=>renderItems(comicsList), newItemsLoading)}
             <button 
                 disabled={newItemsLoading} 
                 style={{'display' : comicsEnded ? 'none' : 'block'}}

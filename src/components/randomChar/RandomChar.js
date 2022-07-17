@@ -1,25 +1,42 @@
 import { useState, useEffect} from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage.js';
+import Skeleton from '../skeleton/Skeleton';
 import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
-import './randomChar.scss';
+import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { fetchRandomChar } from '../../redux/store/charSlice';
 
+import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
-const RandomChar=()=>{
-    const [char,setChar]=useState({});
-    const {loading, error, process, setProcess, getCharacter ,clearError}=useMarvelService();
-    
-   
-    const updateChar=()=>{
-        clearError();
-        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
-        getCharacter(id)
-        .then(onCharLoaded)
-        .then(setProcess('confirmed'));
-    }
+// const setContent=(status, Component, data)=>{
+//     switch(status){
+//         case 'idle':{
+//             return (!data
+//             ?<Skeleton/>
+//             :<Component data={data}/>)
+//         }
+//             break;
+//         case 'loading':
+//             return <Spinner/>
+//             break;
+//         case 'error':
+//             return <ErrorMessage/>
+//         default:
+//             throw new Error('Unexpected process state');
+//     }
+// }
 
+
+const getContent = setContent('single');
+
+const RandomChar=()=>{
+    const dispatch = useDispatch();
+    const {randomCharData, randomCharLoadingStatus} = useSelector(state => state.char);
+
+    const [char,setChar]=useState({});
+    
     useEffect(()=>{
         updateChar();
         const timerId = setInterval(updateChar(), 60000);
@@ -28,13 +45,24 @@ const RandomChar=()=>{
         }
     },[]);
 
+    useEffect(() => {
+        onCharLoaded(randomCharData);
+    }, [randomCharData])
+
+   
+    const updateChar=()=>{
+        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
+        dispatch(fetchRandomChar(id));
+        onCharLoaded(randomCharData);
+    }
+    
     const onCharLoaded=(char)=>{
         setChar(char);
     }
 
     return (
         <div className="randomchar">
-            {setContent(process, View, char)}
+            {getContent(randomCharLoadingStatus, View, char)}
 
             <div className="randomchar__static">
                 <p className="randomchar__title">
