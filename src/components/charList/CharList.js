@@ -5,6 +5,9 @@ import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
 
+import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { fetchCharInfo, changeCharId, increment} from '../../redux/store/charSlice';
+
 import './charList.scss';
 
 const setContent=(process, Component, newItemsLoading)=>{
@@ -23,6 +26,10 @@ const setContent=(process, Component, newItemsLoading)=>{
 }
 
 const CharList=(props)=> {
+
+    const dispatch = useDispatch();
+    const {charLoadingStatus, charData, charId, count} = useSelector(state => state.char);
+
     const {loading,error, process, setProcess, getAllCharacters,clearError} = useMarvelService();
 
     const [charList,setCharList]=useState([]);
@@ -48,17 +55,20 @@ const CharList=(props)=> {
         setCharList(charList=>[...charList, ...newCharList]);
         setNewItemsLoading(false);
         setOffset(offset=>offset+9);
-        setCharEnded(ended);   
+        setCharEnded(ended);    
     }
 
     const itemRefs = useRef([]);
    
-    const focusOnItem = (id) => {
+    const focusOnItem = (id, itemId) => {
+        dispatch(increment(10));
+        dispatch(fetchCharInfo(itemId));
+        dispatch(changeCharId(itemId));
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
         itemRefs.current[id].focus();
     }
-    
+
     const renderItems=(arr)=> {
         const items =  arr.map((item,i) => {
             let imgStyle=/image_not_available/.test(item.thumbnail)?
@@ -72,11 +82,11 @@ const CharList=(props)=> {
                         tabIndex={0}
                         ref={elem=>itemRefs.current[i]=elem}
                         onClick={()=>{props.onSelectedChar(item.id);
-                                    focusOnItem(i);}}
+                                    focusOnItem(i, item.id);}}
                         onKeyPress={(e) => {
                         if (e.key === ' ' || e.key === "Enter") {
                             props.onCharSelected(item.id);
-                            focusOnItem(i);
+                            focusOnItem(i, item.id);
                             }
                         }}                    
                         >

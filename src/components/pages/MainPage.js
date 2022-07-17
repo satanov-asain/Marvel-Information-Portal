@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Provider } from "react-redux";
-import store from "../../store";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
@@ -25,7 +23,6 @@ const MainPage=()=>{
             <ErrorBoundary>
                 <RandomChar/>
             </ErrorBoundary>
-            <Provider store={store}>
                 <div className="char__content">
                     <ErrorBoundary>
                         <CharList onSelectedChar={onSelectedChar}/>
@@ -40,7 +37,6 @@ const MainPage=()=>{
                     </div>
 
                 </div>
-            </Provider>
             
             <img className="bg-decoration" src={decoration} alt="vision"/>
         </>

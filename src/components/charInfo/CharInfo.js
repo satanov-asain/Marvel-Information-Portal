@@ -1,28 +1,42 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useDebugValue} from 'react';
 import PropTypes from 'prop-types';
 import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
 
+import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { fetchCharInfo } from '../../redux/store/charSlice';
+
 import './charInfo.scss';
 
-const CharInfo=(props)=>{
+const CharInfo = (props) => {
+    const dispatch = useDispatch();
+    const {charId, charData} = useSelector(state => state.char);
+
     const [char,setChar]=useState(null);
-    const {process, setProcess, clearError, getCharacter}=useMarvelService();
+    const {process, setProcess, clearError, getCharacter} = useMarvelService();
+
     useEffect(()=>{
         updateCharInfo();
     },[]);
 
     useEffect(()=>{
             updateCharInfo();
-        },[props.charId])
+        },[props.charId, charData])
 
     const updateCharInfo=()=>{
+        // clearError();
+        // const {charId}=props;
+        // if(!charId){return;}
+        // getCharacter(charId)
+        // .then(onCharLoaded)
+        // .then(()=>setProcess('confirmed'));
+        // console.log(charData);
+
         clearError();
-        const {charId}=props;
-        if(!charId){return;}
-        getCharacter(charId)
-        .then(onCharLoaded)
-        .then(()=>setProcess('confirmed'));
+        if(!charData){return;}
+        setProcess('confirmed');
+        setChar(charData);
+        
     }
 
     const onCharLoaded=(char)=>{
@@ -36,7 +50,7 @@ const CharInfo=(props)=>{
 
     return (
         <div className="char__info">
-            {setContent(process, View, char)}
+            {setContent(process, View, charData)}
             {/* {skeleton}
             {errorMessage}
             {spinner}
@@ -50,7 +64,7 @@ const View =({data})=>{
 
     const {name,description,thumbnail,homepage,wiki,comics}=data;
     let imgStyle=/image_not_available'/.test(thumbnail)?
-        {'objectFit':'contain'}:{'objectFit':'cover'};
+        {'objectFit':'unset'}:{'objectFit':'cover'};
     return(
         <>
             <div className="char__basics">
