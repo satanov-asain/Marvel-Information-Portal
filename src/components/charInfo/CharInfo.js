@@ -5,7 +5,7 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 import setContent from '../../utils/setContent';
 
-import { useSelector } from 'react-redux/es/exports';
+import { useSelector } from 'react-redux';
 
 import './charInfo.scss';
 

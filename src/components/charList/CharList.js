@@ -1,4 +1,7 @@
 import {useState,useEffect, useRef, useMemo} from 'react';
+import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { fetchCharInfo, increment} from '../../redux/slices/charSlice';
+
 import PropTypes from 'prop-types';
 import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
@@ -6,8 +9,7 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
 import setContent  from '../../utils/setContent';
 
-import { useDispatch, useSelector } from 'react-redux/es/exports';
-import { fetchCharInfo, increment} from '../../redux/store/charSlice';
+
 
 import './charList.scss';
 
@@ -31,7 +33,7 @@ const getContent = setContent('list');
 const CharList=(props)=> {
 
     const dispatch = useDispatch();
-    const {charLoadingStatus, charData, charId, count} = useSelector(state => state.char);
+    // const {charLoadingStatus, charData, charId, count} = useSelector(state => state.char);
 
     const {loading,error, process, setProcess, getAllCharacters,clearError} = useMarvelService();
 

@@ -4,8 +4,8 @@ import ErrorMessage from '../errorMessage/ErrorMessage.js';
 import Skeleton from '../skeleton/Skeleton';
 import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
-import { useDispatch, useSelector } from 'react-redux/es/exports';
-import { fetchRandomChar } from '../../redux/store/charSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRandomChar } from '../../redux/slices/charSlice';
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';

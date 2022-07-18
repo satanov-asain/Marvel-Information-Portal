@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
-import store from ".";
-import { fetchMarvelService } from "../../services/MarvelService"; 
+import { fetchMarvelService } from "../../services/MarvelService";
+ 
 const {fetchCharacter} = fetchMarvelService();
 
 export const fetchCharInfo = createAsyncThunk(
@@ -24,7 +23,7 @@ const initialState = {
     charLoadingStatus:'idle',
     //state для RandomChar
     randomCharData:{},
-    randomCharId:0,
+    randomCharId:0, 
     randomCharLoadingStatus:'idle',
     count:0
 }

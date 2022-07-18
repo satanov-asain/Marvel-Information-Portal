@@ -1,5 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCharInfo } from '../../redux/slices/charSlice';
+import { fetchComicInfo } from '../../redux/slices/comicSlice';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -10,6 +13,9 @@ import setContent from '../../utils/setContent';
 const getContent = setContent('single');
 
 const SinglePage = ({Component, dataType}) => {
+        const dispatch = useDispatch();
+        const {comicData, comicLoadingStatus, comicId} = useSelector(state => state.comic);
+
         const {id} = useParams();
         const [data, setData] = useState(null);
         const {loading, error, process, setProcess, getComic, getCharacter, clearError} = useMarvelService();
@@ -23,10 +29,14 @@ const SinglePage = ({Component, dataType}) => {
 
             switch (dataType) {
                 case 'comic':
-                    getComic(id).then(onDataLoaded).then(()=>setProcess('confirmed'));
+                    dispatch(fetchComicInfo(id));
+                    // onDataLoaded(comicData);
+                    getComic(id).then(onDataLoaded).then(() => setProcess('confirmed'));
                     break;
                 case 'character':
-                    getCharacter(id).then(onDataLoaded).then(()=>setProcess('confirmed'));
+                    dispatch(fetchCharInfo(id));
+                    // onDataLoaded(comicData);
+                    getCharacter(id).then(onDataLoaded).then(() => setProcess('confirmed'));
             }
         }
 

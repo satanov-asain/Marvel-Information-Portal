@@ -4,6 +4,21 @@ const _apiBase='https://gateway.marvel.com:443/v1/public/';
 const _apiKey='apikey=531082be7ba2891c77469570d4d4606b';
 const _baseOffsetChars=210;
 
+const baseFetch = async(url, method="GET", body=null, headers={"Content-Type":"application/json"})=>{
+    try{
+        const res= await fetch(url, {method, body, headers});
+        if(!res.ok){
+            throw new Error(`Cannot fetch ${url}. Status ${res.status}`)
+        }
+        const data= await res.json();
+
+        return data;
+    }
+    catch(e){
+        throw e;
+    }
+}
+
 const _transformChar=(char)=>{
     return  {
     id:char.id,
@@ -60,24 +75,16 @@ const useMarvelService=()=>{
 
 export const fetchMarvelService = () => {
     const fetchCharacter = async (id) => {
-        const baseFetch = async(url, method="GET", body=null, headers={"Content-Type":"application/json"})=>{
-            try{
-                const res= await fetch(url, {method, body, headers});
-                if(!res.ok){
-                    throw new Error(`Cannot fetch ${url}. Status ${res.status}`)
-                }
-                const data= await res.json();
-    
-                return data;
-            }
-            catch(e){
-                throw e;
-            }
-        }
+        
         const res = await baseFetch(`${_apiBase}characters/${id}?${_apiKey}`);
         return _transformChar(res.data.results[0]);
     }
-    return{fetchCharacter};
+
+    const fetchComic = async (id) => {
+        const res = await baseFetch(`${_apiBase}comics/${id}?${_apiKey}`);
+        return _transformComics(res.data.results[0]);
+    }
+    return{fetchCharacter, fetchComic};
 }
 
 export default useMarvelService;

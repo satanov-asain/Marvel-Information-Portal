@@ -1,12 +1,14 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import char from './charSlice';
+import char from '../slices/charSlice';
+import comic from '../slices/comicSlice';
 
-
+const rootReducer = combineReducers({
+    char,
+    comic
+})
 
 const store = configureStore({
-    reducer:{
-        char,
-    },
+    reducer:rootReducer,
     middleware: getDefaultMiddleware => getDefaultMiddleware(),
     devTools: process.env.NODE_ENV !== 'production'
 })

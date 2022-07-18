@@ -2,6 +2,8 @@ import {useState, useEffect, useRef} from 'react';
 import { Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
+import { useDispatch } from 'react-redux';
+import { fetchComicInfo } from '../../redux/slices/comicSlice';
 
 import setContent from '../../utils/setContent';
 import Spinner from '../spinner/Spinner';
@@ -31,6 +33,8 @@ import './comicsList.scss';
 const getContent = setContent('list');
 
 const ComicsList = () => {
+    const dispatch = useDispatch();
+
     const [comicsList, setComicsList] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [offset, setOffset] = useState(0);
@@ -64,7 +68,13 @@ const ComicsList = () => {
         const items = arr.map((item, i) => {
             return (
                 <CSSTransition key={i} timeout={500} classNames=''>
-                    <li className="comics__item" key={i}>
+                    <li className="comics__item" key={i}
+                        onClick={() => {dispatch(fetchComicInfo(item.id))}}
+                        onKeyPress={(e) => {
+                        if (e.key === ' ' || e.key === "Enter") {
+                            dispatch(fetchComicInfo(item.id))
+                            }
+                        }} >
                         <Link to={`/comics/${item.id}`}>
                             <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                             <div className="comics__item-name">{item.title}</div>
