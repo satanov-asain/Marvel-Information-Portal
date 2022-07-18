@@ -27,6 +27,7 @@ const comicSlice = createSlice({
         .addCase(fetchComicInfo.fulfilled, (state, action) => {
             state.comicLoadingStatus = 'idle';
             state.comicData = action.payload;
+            state.comicId = action.payload.id;
         })
         .addCase(fetchComicInfo.rejected, state => {state.comicLoadingStatus = 'error';})
     }

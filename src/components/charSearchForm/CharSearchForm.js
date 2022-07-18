@@ -2,6 +2,8 @@ import {useState,} from 'react';
 import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {Link} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchCharInfo } from '../../redux/slices/charSlice';
 
 import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -10,6 +12,8 @@ import './charSearchForm.scss';
 
 
 const CharSearchForm = () => {
+    const dispatch = useDispatch();
+
     const [char, setChar] = useState(null);
     const {loading, error, process, setProcess, getCharacterByName, clearError} = useMarvelService();
 
@@ -30,7 +34,8 @@ const CharSearchForm = () => {
                     <div className="char__search-wrapper">
                         <div className="char__search-success">There is! Visit {char[0].name} page?</div>
                         <Link to={`/characters/${char[0].id}`} className="button button__secondary">
-                            <div className="inner">To page</div>
+                            <div className="inner"
+                                  onClick={() => {dispatch(fetchCharInfo(char[0].id));}}  >To page</div>
                         </Link>
                     </div> 
                     : 

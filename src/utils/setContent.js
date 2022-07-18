@@ -45,6 +45,28 @@ const setContent=(amount)=>{
                 }
             );
             
+            case 'page':
+                return(
+                    (status, Component, data) => {
+                        switch(status){
+                            case 'idle':{
+                                return (!data
+                                ?<Skeleton/>
+                                :<Component data={data}/>)
+                            }
+                                break;
+                            case 'loading':
+                                return <Spinner/>
+                                break;
+                            case 'error':
+                                return <ErrorMessage/>
+                            default:
+                                throw new Error('Unexpected process state');
+                        }
+                    }
+                    
+                );
+                
             default:
                 throw new Error('Unexpected process state');
     }

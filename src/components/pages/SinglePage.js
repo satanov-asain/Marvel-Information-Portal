@@ -15,28 +15,32 @@ const getContent = setContent('single');
 const SinglePage = ({Component, dataType}) => {
         const dispatch = useDispatch();
         const {comicData, comicLoadingStatus, comicId} = useSelector(state => state.comic);
+        const {charData, charLoadingStatus, charId} = useSelector(state => state.char);
 
         const {id} = useParams();
         const [data, setData] = useState(null);
+        const [status, setStatus] = useState('idle');
         const {loading, error, process, setProcess, getComic, getCharacter, clearError} = useMarvelService();
 
         useEffect(() => {
             updateData()
-        }, [id])
+        }, [id, comicId, charId])
 
         const updateData = () => {
             clearError();
 
             switch (dataType) {
                 case 'comic':
-                    dispatch(fetchComicInfo(id));
-                    // onDataLoaded(comicData);
-                    getComic(id).then(onDataLoaded).then(() => setProcess('confirmed'));
+                    // dispatch(fetchComicInfo(id));
+                    onDataLoaded(comicData);
+                    setStatus(comicLoadingStatus);
+                    // getComic(id).then(onDataLoaded).then(() => setProcess('confirmed'));
                     break;
                 case 'character':
-                    dispatch(fetchCharInfo(id));
-                    // onDataLoaded(comicData);
-                    getCharacter(id).then(onDataLoaded).then(() => setProcess('confirmed'));
+                    // dispatch(fetchCharInfo(id));
+                    onDataLoaded(charData);
+                    setStatus(charLoadingStatus);
+                    // getCharacter(id).then(onDataLoaded).then(() => setProcess('confirmed'));
             }
         }
 
@@ -47,7 +51,7 @@ const SinglePage = ({Component, dataType}) => {
         return (
             <>
                 <AppBanner/>
-                {getContent(process, Component, data)}
+                {getContent(status, Component, data)}
             </>
         )
 }

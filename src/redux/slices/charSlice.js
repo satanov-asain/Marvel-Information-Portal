@@ -42,7 +42,8 @@ const charSlice = createSlice({
         .addCase(fetchCharInfo.pending, state => {state.charLoadingStatus = 'loading';})
         .addCase(fetchCharInfo.fulfilled, (state, action) => {
             state.charLoadingStatus = 'idle';
-            state.charData = action.payload ;})
+            state.charData = action.payload ;
+            state.charId = action.payload.id;})
         .addCase(fetchCharInfo.rejected, state => {state.charLoadingStatus = 'error';} )
         //Отработка загрузки для RandomChar
         .addCase(fetchRandomChar.pending, state => {state.randomCharLoadingStatus = 'loading';})
