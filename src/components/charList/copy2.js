@@ -1,6 +1,4 @@
-import {useState,useEffect, useRef, useMemo, useLayoutEffect} from 'react';
-import store from '../../redux/store'
-import { apiChar } from '../../redux/api/apiChar';
+import {useState,useEffect, useRef, useMemo} from 'react';
 import { useDispatch, useSelector } from 'react-redux/es/exports';
 import { fetchCharInfo, increment} from '../../redux/slices/charSlice';
 import { useGetAllCharactersQuery } from '../../redux/api/apiChar';
@@ -56,19 +54,12 @@ const CharList=(props)=> {
     let isStatus = isLoading?'loading':isFetching?'loading':isError?'error':'confirmed';
 
     useEffect(()=>{
-        setCharList(charList => charList = []);
-        setOffset(offset => offset=210);
-    
         console.log('!-MOUNTED-!');
         console.log('!--ЗАПРОС--!');
         if(isStatus === 'confirmed'){
             onRequest(true);
         }
         setJust(just => just++);
-        
-        return () => {
-            store.dispatch(apiChar.util.resetApiState());
-        }
     },[]);
     useEffect(() => {
         console.log('!--ЗАПРОС--!');
@@ -77,6 +68,8 @@ const CharList=(props)=> {
         }
     }, [isStatus])
 
+
+    
     const onRequest=(initial)=>{
         console.log('JUST Request');
         setNewItemsLoading(isStatus);
@@ -148,9 +141,9 @@ const CharList=(props)=> {
         )
     }
 
-        let elements=useMemo(()=>{
+        const elements=useMemo(()=>{
             return charList?getContent(isStatus, ()=>renderItems(charList), isItemsLoading):null;
-        },[isStatus, charList, offset, characterList]);
+        },[isStatus, charList, just]);
 
         useEffect(()=>{
             if(characterList!=false){
@@ -173,7 +166,9 @@ const CharList=(props)=> {
         console.log('Full RTK', characterList);
         console.log('Full DATA', localCharacterList);
         console.log('Full LIST', charList);
- 
+    
+    
+
         return (
             <div className="char__list">
                 <button

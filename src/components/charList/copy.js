@@ -1,6 +1,4 @@
-import {useState,useEffect, useRef, useMemo, useLayoutEffect} from 'react';
-import store from '../../redux/store'
-import { apiChar } from '../../redux/api/apiChar';
+import {useState,useEffect, useRef, useMemo} from 'react';
 import { useDispatch, useSelector } from 'react-redux/es/exports';
 import { fetchCharInfo, increment} from '../../redux/slices/charSlice';
 import { useGetAllCharactersQuery } from '../../redux/api/apiChar';
@@ -14,19 +12,7 @@ import Spinner from '../spinner/Spinner';
 import setContent  from '../../utils/setContent';
 import './charList.scss';
 
-// const getContent = setContent('list');
-const getContent=(status, Component, newItemsLoading) => {
-    switch(status){
-        case 'loading': 
-            return newItemsLoading? <Component/>:<Spinner/>;
-        case 'confirmed':
-            return <Component/>
-        case 'error':
-            return <ErrorMessage/>
-        default:
-            throw new Error('Unexpected process state');
-    }
-}
+const getContent = setContent('list');
 
 const CharList=(props)=> {
     console.log('!-- NEW RENDER --!');
@@ -41,7 +27,7 @@ const CharList=(props)=> {
     const [offCopy, setOffCopy] = useState(210);
     const [limit, setLimit] = useState(9);
     const [charEnded,setCharEnded]=useState(false);
-    const [just, setJust] = useState(0);
+    const [just, setJust] = useState(100);
     const [localCharacterList, setLocalCharacterList] = useState([]);
 
     const {
@@ -52,44 +38,30 @@ const CharList=(props)=> {
         isFetching
     } = useGetAllCharactersQuery(offset);
 
-    let isItemsLoading = isLoading || isFetching;
-    let isStatus = isLoading?'loading':isFetching?'loading':isError?'error':'confirmed';
-
     useEffect(()=>{
-        setCharList(charList => charList = []);
-        setOffset(offset => offset=210);
-    
-        console.log('!-MOUNTED-!');
-        console.log('!--ЗАПРОС--!');
-        if(isStatus === 'confirmed'){
-            onRequest(true);
-        }
-        setJust(just => just++);
-        
-        return () => {
-            store.dispatch(apiChar.util.resetApiState());
-        }
+        onRequest(offset, true)
     },[]);
-    useEffect(() => {
-        console.log('!--ЗАПРОС--!');
-        if(isStatus === 'confirmed'){
-            onRequest(false);
-        }
-    }, [isStatus])
-
-    const onRequest=(initial)=>{
+    
+    const onRequest=(offset,initial)=>{
         console.log('JUST Request');
-        setNewItemsLoading(isStatus);
-            onCharListLoaded(characterList);
         clearError();
+        setNewItemsLoading(initial?false:true);
+        getAllCharacters(offset)
+        .then((data) => {
+            console.log('!-- CHARS Fetched --!');
+            onCharListLoaded(data);
+        })
+        .then(()=>setProcess('confirmed'));
     }
 
     const onCharListLoaded=(newCharList)=>{
-        console.log('!-ДАЛЬШЕ-!');
         let ended = false;
-        if(newCharList.length%9!=0){ended=true;}
-        setCharList(charList=>charList.concat(characterList));
-        setNewItemsLoading(isStatus);
+        if(newCharList.length<9){ended=true;}
+        setCharList(charList=>[...charList, ...newCharList]);
+        setNewItemsLoading(false);
+        setOffset(offset=>offset+9);
+        console.log('Changing offset');
+        setOffCopy(offset);
         setCharEnded(ended);
         console.log('!-- LOADING Finished --!');    
     }
@@ -111,6 +83,7 @@ const CharList=(props)=> {
     const wait = (offset) => {
         alert(`HAPPY ${offset}`);
     }
+
     const renderItems=(arr)=> {
         const items =  arr.map((item,i) => {
             let imgStyle=/image_not_available/.test(item.thumbnail)?
@@ -147,11 +120,10 @@ const CharList=(props)=> {
             </ul>
         )
     }
-
-        let elements=useMemo(()=>{
-            return charList?getContent(isStatus, ()=>renderItems(charList), isItemsLoading):null;
-        },[isStatus, charList, offset, characterList]);
-
+        const elements=useMemo(()=>{
+            return getContent(process, ()=>renderItems(charList), newItemsLoading);
+        },[process]);
+        
         useEffect(()=>{
             if(characterList!=false){
                 setLocalCharacterList([...characterList]);}
@@ -167,13 +139,12 @@ const CharList=(props)=> {
             console.log('!--Gotten RTK', offset, isLoading, isFetching, 'success : ', isSuccess);
         }else{ console.log('!--Empty RTK', offset, isLoading, isFetching, 'success : ', isSuccess)}
     
-        console.log('isLoading',isItemsLoading);
-        console.log('!--STATUS--!',isStatus);
-
         console.log('Full RTK', characterList);
         console.log('Full DATA', localCharacterList);
         console.log('Full LIST', charList);
- 
+    
+    
+
         return (
             <div className="char__list">
                 <button
@@ -182,9 +153,9 @@ const CharList=(props)=> {
                 >HAPPY</button>
                 {elements}    
                 <button className="button button__main button__long"
-                        disabled={isItemsLoading}
+                        disabled={newItemsLoading}
                         style={{'display': charEnded?'none':'block'}}
-                        onClick={()=>setOffset(offset => offset+9)}>
+                        onClick={()=>onRequest(offset)}>
                     <div className="inner">load more</div>
                 </button>
             </div>
@@ -199,4 +170,17 @@ CharList.propTypes={
 }
 
 export default CharList;
-
+// const setContent=(process, Component, newItemsLoading)=>{
+//     switch(process){
+//         case 'waiting':
+//             return <Spinner/>
+//         case 'loading': 
+//             return newItemsLoading? <Component/>:<Spinner/>;
+//         case 'confirmed':
+//             return <Component/>
+//         case 'error':
+//             return <ErrorMessage/>
+//         default:
+//             throw new Error('Unexpected process state');
+//     }
+// }

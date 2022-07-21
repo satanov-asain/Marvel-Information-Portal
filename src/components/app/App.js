@@ -10,6 +10,7 @@ const SingleCharacterLayout=lazy(()=>import('../pages/singleCharacterLayout/Sing
 const SingleComicLayout=lazy(()=>import('../pages/singleComicLayout/SingleComicLayout'));
 
 const App =()=>{
+
     return (
         <Router>
             <div className="app">
