@@ -1,9 +1,13 @@
 import {useState, useEffect, useRef} from 'react';
+import store from '../../redux/store';
+import { apiComic } from '../../redux/api/apiComic';
+import { useDispatch } from 'react-redux';
+import { fetchComicInfo } from '../../redux/slices/comicSlice';
+import { useGetAllComicsQuery } from '../../redux/api/apiComic';
 import { Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
-import { useDispatch } from 'react-redux';
-import { fetchComicInfo } from '../../redux/slices/comicSlice';
+
 
 import setContent from '../../utils/setContent';
 import Spinner from '../spinner/Spinner';
@@ -41,26 +45,44 @@ const ComicsList = () => {
     const [comicsEnded, setComicsEnded] = useState(false);
 
     const {loading, error, process, setProcess, getAllComics} = useMarvelService();
-
+    const {
+        data: comicsListQuery = [],
+        isLoading,
+        isFetching,
+        isError,
+        isSuccess
+    } = useGetAllComicsQuery(offset);
+    let isItemsLoading = isLoading || isFetching;
+    let isStatus = isLoading?'loading':isFetching?'loading':isError?'error':'confirmed';
+    
     useEffect(() => {
-        onRequest(offset, true);
+        if(isStatus === 'confirmed'){
+            onRequest();
+        }
+        return () => {
+            setComicsList([]);
+            setOffset(0);
+            store.dispatch(apiComic.util.resetApiState())
+        }
     }, [])
+    useEffect(() => {
+        if(isStatus === 'confirmed'){
+            onRequest();
+        }
+    },[isStatus])
 
-    const onRequest = (offset, initial) => {
-        setNewItemsLoading(initial?false:true);
-        getAllComics(offset)
-            .then(onComicsListLoaded)
-            .then(()=>setProcess('confirmed'));
+    const onRequest = () => {
+        setNewItemsLoading(isStatus);
+        onComicsListLoaded(comicsListQuery);
     }
 
     const onComicsListLoaded = (newComicsList) => {
         let ended = false;
-        if (newComicsList.length < 8) {
+        if (newComicsList.length % 8 !== 0) {
             ended = true;
         }
-        setComicsList([...comicsList, ...newComicsList]);
-        setNewItemsLoading(false);
-        setOffset(offset + 8);
+        setComicsList(comicsList =>comicsList.concat(newComicsList));
+        setNewItemsLoading(isStatus);
         setComicsEnded(ended);
     }
 
@@ -96,12 +118,12 @@ const ComicsList = () => {
 
     return (
         <div className="comics__list">
-            {getContent(process, ()=>renderItems(comicsList), newItemsLoading)}
+            {getContent(isStatus, ()=>renderItems(comicsList), isItemsLoading)}
             <button 
-                disabled={newItemsLoading} 
+                disabled={isItemsLoading} 
                 style={{'display' : comicsEnded ? 'none' : 'block'}}
                 className="button button__main button__long"
-                onClick={() => onRequest(offset)}>
+                onClick={() => {setOffset(offset=>offset+8)}}>
                 <div className="inner">load more</div>
             </button>
         </div>

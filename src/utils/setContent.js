@@ -31,8 +31,6 @@ const setContent=(amount)=>{
             return(
                 (status, Component, newItemsLoading) => {
                     switch(status){
-                        case 'waiting':
-                            return <Spinner/>
                         case 'loading': 
                             return newItemsLoading? <Component/>:<Spinner/>;
                         case 'confirmed':

@@ -35,7 +35,7 @@ const CharList=(props)=> {
     const [newItemsLoading,setNewItemsLoading]=useState(false);
     const [offset,setOffset]=useState(210);
     const [charEnded,setCharEnded]=useState(false);
-    
+
     const {
         currentData: characterList = [],
         isError,
@@ -52,8 +52,8 @@ const CharList=(props)=> {
             onRequest();
         }
         return () => {
-            setCharList(charList => charList = []);
-            setOffset(offset => offset=210);
+            setCharList([]);
+            setOffset(210);
             store.dispatch(apiChar.util.resetApiState());
         }
     },[]);
