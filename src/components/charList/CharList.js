@@ -29,21 +29,13 @@ const getContent=(status, Component, newItemsLoading) => {
 }
 
 const CharList=(props)=> {
-    console.log('!-- NEW RENDER --!');
     const dispatch = useDispatch();
-    // const {charLoadingStatus, charData, charId, count} = useSelector(state => state.char);
-
-    const {loading,error, process, setProcess, getAllCharacters,clearError} = useMarvelService();
 
     const [charList,setCharList]=useState([]);
     const [newItemsLoading,setNewItemsLoading]=useState(false);
     const [offset,setOffset]=useState(210);
-    const [offCopy, setOffCopy] = useState(210);
-    const [limit, setLimit] = useState(9);
     const [charEnded,setCharEnded]=useState(false);
-    const [just, setJust] = useState(0);
-    const [localCharacterList, setLocalCharacterList] = useState([]);
-
+    
     const {
         currentData: characterList = [],
         isError,
@@ -56,42 +48,32 @@ const CharList=(props)=> {
     let isStatus = isLoading?'loading':isFetching?'loading':isError?'error':'confirmed';
 
     useEffect(()=>{
-        setCharList(charList => charList = []);
-        setOffset(offset => offset=210);
-    
-        console.log('!-MOUNTED-!');
-        console.log('!--ЗАПРОС--!');
         if(isStatus === 'confirmed'){
-            onRequest(true);
+            onRequest();
         }
-        setJust(just => just++);
-        
         return () => {
+            setCharList(charList => charList = []);
+            setOffset(offset => offset=210);
             store.dispatch(apiChar.util.resetApiState());
         }
     },[]);
     useEffect(() => {
-        console.log('!--ЗАПРОС--!');
         if(isStatus === 'confirmed'){
-            onRequest(false);
-        }
+            onRequest();}
     }, [isStatus])
 
-    const onRequest=(initial)=>{
+    const onRequest=()=>{
         console.log('JUST Request');
         setNewItemsLoading(isStatus);
-            onCharListLoaded(characterList);
-        clearError();
+        onCharListLoaded(characterList);
     }
 
     const onCharListLoaded=(newCharList)=>{
-        console.log('!-ДАЛЬШЕ-!');
         let ended = false;
         if(newCharList.length%9!=0){ended=true;}
         setCharList(charList=>charList.concat(characterList));
         setNewItemsLoading(isStatus);
-        setCharEnded(ended);
-        console.log('!-- LOADING Finished --!');    
+        setCharEnded(ended);  
     }
 
     const itemRefs = useRef([]);
@@ -104,13 +86,6 @@ const CharList=(props)=> {
         itemRefs.current[id].focus();
     }
 
-    const happy = (offset) => {
-    setTimeout(() =>{wait(offset);},3000);
-        
-    };
-    const wait = (offset) => {
-        alert(`HAPPY ${offset}`);
-    }
     const renderItems=(arr)=> {
         const items =  arr.map((item,i) => {
             let imgStyle=/image_not_available/.test(item.thumbnail)?
@@ -147,51 +122,25 @@ const CharList=(props)=> {
             </ul>
         )
     }
-
         let elements=useMemo(()=>{
-            return charList?getContent(isStatus, ()=>renderItems(charList), isItemsLoading):null;
+            return charList?getContent(isStatus, ()=>renderItems(charList), newItemsLoading):null;
         },[isStatus, charList, offset, characterList]);
-
-        useEffect(()=>{
-            if(characterList!=false){
-                setLocalCharacterList([...characterList]);}
-        },[characterList])
-
-        useEffect(()=>{
-            console.log('Offset touched --!', offset);
-            if(offCopy!==offset){console.log('Offset CHANGED--!', offset)};
-        },[offset])
         
-        if(characterList!=false){
-            // setLocalCharacterList([...localCharacterList, ...characterList]);
-            console.log('!--Gotten RTK', offset, isLoading, isFetching, 'success : ', isSuccess);
-        }else{ console.log('!--Empty RTK', offset, isLoading, isFetching, 'success : ', isSuccess)}
-    
-        console.log('isLoading',isItemsLoading);
-        console.log('!--STATUS--!',isStatus);
-
-        console.log('Full RTK', characterList);
-        console.log('Full DATA', localCharacterList);
-        console.log('Full LIST', charList);
- 
         return (
             <div className="char__list">
                 <button
                 style={{'padding':'20px', 'border':'solid red 5px'}}
-                onClick={()=>{happy(offset)}}
+                onClick={()=>{}}
                 >HAPPY</button>
                 {elements}    
                 <button className="button button__main button__long"
                         disabled={isItemsLoading}
                         style={{'display': charEnded?'none':'block'}}
                         onClick={()=>setOffset(offset => offset+9)}>
-                    <div className="inner">load more</div>
+                    <div className="inner">Подзагрузить</div>
                 </button>
             </div>
-        )
-
-
-        
+        )       
 }
 
 CharList.propTypes={
