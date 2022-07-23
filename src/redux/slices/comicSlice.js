@@ -22,7 +22,7 @@ const comicSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
-        //Отработка загрузки для ComucInfo
+        //Отработка загрузки для ComicInfo
         .addCase(fetchComicInfo.pending, state => {state.comicLoadingStatus = 'loading';})
         .addCase(fetchComicInfo.fulfilled, (state, action) => {
             state.comicLoadingStatus = 'idle';
@@ -33,6 +33,5 @@ const comicSlice = createSlice({
     }
 })
 
-const {actions, reducer} = comicSlice;
-
+const {reducer} = comicSlice;
 export default reducer;

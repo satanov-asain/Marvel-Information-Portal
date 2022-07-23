@@ -1,4 +1,4 @@
-import {useState, useMemo} from 'react';
+import {useState,} from 'react';
 import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {Link} from 'react-router-dom';
@@ -11,32 +11,35 @@ import './charSearchForm.scss';
 
 
 const CharSearchForm = () => {
+    console.log('!RENDER!');
     const dispatch = useDispatch();
     const {searchCharLoadingStatus, searchCharData} = useSelector(state => state.char);
 
-    const [char, setChar] = useState({});
+    const [char, setChar] = useState(null);
 
-    const onCharLoaded = (charData) => {
-        setChar(charData);
+    const onCharLoaded = (char) => {
+        setChar(char);
     }
 
     const updateChar = (name) => {
         dispatch(fetchSearchChar(name));
-        if(searchCharData){
+        if(searchCharLoadingStatus === 'idle' && searchCharData!==null){
             onCharLoaded(searchCharData);
             console.log(searchCharData);
         }
     }
 
-    const results = Object.keys(searchCharData).length===0 ? null : (Object.keys(searchCharData).length!==0 && searchCharLoadingStatus !== 'error')?
+    const errorMessage = searchCharLoadingStatus === "error" ? <div className="char__search-critical-error"><ErrorMessage /></div> : null;
+    const results = !char ? null : Object.keys(char).length > 0 ?
                     <div className="char__search-wrapper">
-                        <div className="char__search-success">Найден! Посетить страницу {searchCharData.name}?</div>
-                        <Link to={`/characters/${searchCharData.id}`} className="button button__secondary">
+                        <div className="char__search-success">Найден! Посетить страницу {char.name}?</div>
+                        <Link to={`/characters/${char.id}`} className="button button__secondary">
                             <div className="inner">На страницу</div>
                         </Link>
                     </div> 
-                    :<div className="char__search-error">
-                        Персонаж не найден или запрос не выполнен. Перепроверьте имя и попробуйте вновь
+                    : 
+                    <div className="char__search-error">
+                        Персонаж не найден. Перепроверьте имя и попробуйте вновь
                     </div>;
 
     return (
@@ -71,8 +74,12 @@ const CharSearchForm = () => {
                 </Form>
             </Formik>
             {results}
+            {errorMessage}
         </div>
     )
 }
 
 export default CharSearchForm;
+
+
+

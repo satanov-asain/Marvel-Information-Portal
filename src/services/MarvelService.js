@@ -79,12 +79,16 @@ export const fetchMarvelService = () => {
         const res = await baseFetch(`${_apiBase}characters/${id}?${_apiKey}`);
         return transformChar(res.data.results[0]);
     }
-
+    const fetchCharacterByName = async (name) => {
+        const res = await baseFetch(`${_apiBase}characters?name=${name}&${_apiKey}`);
+        // return res.data.results.map(transformChar); 
+        return transformChar(res.data.results[0]);
+    }
     const fetchComic = async (id) => {
         const res = await baseFetch(`${_apiBase}comics/${id}?${_apiKey}`);
         return transformComic(res.data.results[0]);
     }
-    return{fetchCharacter, fetchComic};
+    return{fetchCharacter, fetchCharacterByName, fetchComic};
 }
 
 export default useMarvelService;

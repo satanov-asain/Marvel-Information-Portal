@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchMarvelService } from "../../services/MarvelService";
  
-const {fetchCharacter} = fetchMarvelService();
+const {fetchCharacter, fetchCharacterByName} = fetchMarvelService();
 
 export const fetchCharInfo = createAsyncThunk(
     'char/fetchCharInfo',
@@ -16,6 +16,13 @@ export const fetchRandomChar = createAsyncThunk(
         return await fetchCharacter(id);
     }
 )
+
+export const fetchSearchChar = createAsyncThunk(
+    'char/searchChar',
+    async (name) => {
+        return await fetchCharacterByName(name);
+    }
+)
 const initialState = {
     //state для CharInfo
     charData:null,
@@ -25,17 +32,17 @@ const initialState = {
     randomCharData:{},
     randomCharId:0, 
     randomCharLoadingStatus:'idle',
-    count:0
+    count:0,
+    //state для SearchChar
+    searchCharData: {},
+    searchCharId:0,
+    searchCharLoadingStatus:'idle'
 }
 
 const charSlice = createSlice({
     name:'char',
     initialState,
-    reducers: {
-        changeCharId(state, action){state.charId = action.payload;},
-        increment(state, action){
-            state.count += action.payload;}
-    },
+    reducers: {},
     extraReducers: builder => {
         builder
         //Отработка загрузки для CharInfo
@@ -51,13 +58,21 @@ const charSlice = createSlice({
             state.randomCharLoadingStatus = 'idle';
             state.randomCharData = action.payload;})
         .addCase(fetchRandomChar.rejected, state => {state.randomCharLoadingStatus = 'error'})
+        //Отработка загрузки для RandomChar
+        .addCase(fetchSearchChar.pending, state => {state.searchCharLoadingStatus = 'loading';})
+        .addCase(fetchSearchChar.fulfilled, (state, action) => {
+            state.searchCharLoadingStatus = 'idle';
+            state.searchCharData = action.payload;
+            state.searchCharId = action.payload.id;})
+        .addCase(fetchSearchChar.rejected, state => {
+            state.searchCharLoadingStatus = 'error';
+            state.searchCharData = {};
+        })
         .addDefaultCase(()=>{})
     }
 })
 
-const {actions, reducer} = charSlice;
-
-export const {changeCharId, increment} = actions;
+const {reducer} = charSlice;
 export default reducer;
 
 

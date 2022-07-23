@@ -1,38 +1,14 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect} from 'react';
 import store from '../../redux/store';
 import { apiComic } from '../../redux/api/apiComic';
 import { useDispatch } from 'react-redux';
 import { fetchComicInfo } from '../../redux/slices/comicSlice';
 import { useGetAllComicsQuery } from '../../redux/api/apiComic';
 import { Link } from 'react-router-dom';
-import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
-
 import setContent from '../../utils/setContent';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-
 import './comicsList.scss';
-
-// const setContent=(process, Component, newItemsLoading)=>{
-//     switch(process){
-//         case 'waiting':
-//             return <Spinner/>;
-//             break;
-//         case 'loading':
-//             return newItemsLoading ? <Component/> : <Spinner/>;
-//             break;
-//         case 'confirmed':
-//             return <Component/>;
-//             break;
-//         case 'error':
-//             return <ErrorMessage/>
-//             break;
-//         default:
-//             throw new Error('Unexpected process state');           
-//     }
-// }
 
 const getContent = setContent('list');
 
@@ -44,13 +20,11 @@ const ComicsList = () => {
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
-    const {loading, error, process, setProcess, getAllComics} = useMarvelService();
     const {
         data: comicsListQuery = [],
         isLoading,
         isFetching,
-        isError,
-        isSuccess
+        isError
     } = useGetAllComicsQuery(offset);
     let isItemsLoading = isLoading || isFetching;
     let isStatus = isLoading?'loading':isFetching?'loading':isError?'error':'confirmed';
@@ -124,7 +98,7 @@ const ComicsList = () => {
                 style={{'display' : comicsEnded ? 'none' : 'block'}}
                 className="button button__main button__long"
                 onClick={() => {setOffset(offset=>offset+8)}}>
-                <div className="inner">load more</div>
+                <div className="inner">Подзагрузить</div>
             </button>
         </div>
     )

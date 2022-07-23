@@ -1,32 +1,16 @@
-import {useState,useEffect, useRef, useMemo, useLayoutEffect} from 'react';
+import {useState,useEffect, useRef, useMemo} from 'react';
 import store from '../../redux/store'
 import { apiChar } from '../../redux/api/apiChar';
 import { useDispatch, useSelector } from 'react-redux/es/exports';
-import { fetchCharInfo, increment} from '../../redux/slices/charSlice';
+import { fetchCharInfo} from '../../redux/slices/charSlice';
 import { useGetAllCharactersQuery } from '../../redux/api/apiChar';
-import { transformChar } from '../../services/MarvelService';
 
 import PropTypes from 'prop-types';
-import useMarvelService from '../../services/MarvelService';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import Spinner from '../spinner/Spinner';
 import setContent  from '../../utils/setContent';
 import './charList.scss';
 
-// const getContent = setContent('list');
-const getContent=(status, Component, newItemsLoading) => {
-    switch(status){
-        case 'loading': 
-            return newItemsLoading? <Component/>:<Spinner/>;
-        case 'confirmed':
-            return <Component/>
-        case 'error':
-            return <ErrorMessage/>
-        default:
-            throw new Error('Unexpected process state');
-    }
-}
+const getContent = setContent('list');
 
 const CharList=(props)=> {
     const dispatch = useDispatch();
@@ -39,7 +23,6 @@ const CharList=(props)=> {
     const {
         currentData: characterList = [],
         isError,
-        isSuccess,
         isLoading,
         isFetching
     } = useGetAllCharactersQuery(offset);
@@ -79,7 +62,6 @@ const CharList=(props)=> {
     const itemRefs = useRef([]);
    
     const focusOnItem = (id, itemId) => {
-        dispatch(increment(10));
         dispatch(fetchCharInfo(itemId));
         itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
