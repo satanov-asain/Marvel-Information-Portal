@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useMarvelService from '../../services/MarvelService';
@@ -10,14 +10,14 @@ const getContent = setContent('single');
 
 const SinglePage = ({Component, dataType}) => {
         const {comicData, comicLoadingStatus, comicId} = useSelector(state => state.comic);
-        const {searchCharData, searchCharLoadingStatus, searchCharId} = useSelector(state => state.char);
+        const {singleCharData, singleCharLoadingStatus, singlecharId} = useSelector(state => state.char);
 
         const [data, setData] = useState(null);
         const [status, setStatus] = useState('idle');
 
-        useEffect(() => {
+        useLayoutEffect(() => {
             updateData()
-        }, [comicId, searchCharId])
+        }, [comicId, singlecharId])
 
         const updateData = () => {
             switch (dataType) {
@@ -26,8 +26,9 @@ const SinglePage = ({Component, dataType}) => {
                     setStatus(comicLoadingStatus);
                     break;
                 case 'character':
-                    onDataLoaded(searchCharData);
-                    setStatus(searchCharLoadingStatus);
+                    onDataLoaded(singleCharData);
+                    setStatus(singleCharLoadingStatus);
+                    break;
             }
         }
 

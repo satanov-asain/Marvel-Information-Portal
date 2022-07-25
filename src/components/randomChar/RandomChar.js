@@ -1,32 +1,15 @@
 import { useState, useEffect} from 'react';
+import { Link } from 'react-router-dom';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage.js';
 import Skeleton from '../skeleton/Skeleton';
 import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRandomChar } from '../../redux/slices/charSlice';
+import { fetchRandomChar, fetchSearchChar, charSetSingle } from '../../redux/slices/charSlice';
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
-
-// const setContent=(status, Component, data)=>{
-//     switch(status){
-//         case 'idle':{
-//             return (!data
-//             ?<Skeleton/>
-//             :<Component data={data}/>)
-//         }
-//             break;
-//         case 'loading':
-//             return <Spinner/>
-//             break;
-//         case 'error':
-//             return <ErrorMessage/>
-//         default:
-//             throw new Error('Unexpected process state');
-//     }
-// }
 
 
 const getContent = setContent('single');
@@ -66,15 +49,15 @@ const RandomChar=()=>{
 
             <div className="randomchar__static">
                 <p className="randomchar__title">
-                    Random character for today!<br/>
-                    Do you want to get to know him better?
+                    Случайный персонаж на сегодня!<br/>
+                    Хочешь разузнать о нём по-лучше?
                 </p>
                 <p className="randomchar__title">
-                    Or choose another one
+                    Или выбери кого-нибудь ещё
                 </p>
                 <button className="button button__main"
                         onClick={updateChar}>
-                    <div className="inner">try it</div>
+                    <div className="inner">попробуй это</div>
                 </button>
                 <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
             </div>
@@ -84,8 +67,11 @@ const RandomChar=()=>{
 }
 
 const View = ({data})=>{
-    const {name,description,thumbnail,thumbnailName,homepage,wiki}=data;
-    
+    const dispatch = useDispatch()
+    const {randomCharLoadingStatus} = useSelector(state => state.char)
+    const {name,description,thumbnail,thumbnailName,homepage,wiki, id}=data;
+    const payload = {data, id, status: randomCharLoadingStatus
+    }
     let imgStyle=/image_not_available/.test(thumbnail)?
         {'objectFit':'unset'}:{'objectFit':'cover'};
    
@@ -99,12 +85,10 @@ const View = ({data})=>{
                 
             </p>
             <div className="randomchar__btns">
-                <a href={homepage} className="button button__main">
-                    <div className="inner">homepage</div>
-                </a>
-                <a href={wiki} className="button button__secondary">
-                    <div className="inner">Wiki</div>
-                </a>
+                <Link to={`/characters/${id}`} className="button button__main">
+                                <div className="inner"
+                                    onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
+                </Link>
             </div>
         </div>
     </div>

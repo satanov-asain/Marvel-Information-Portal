@@ -16,7 +16,6 @@ const ComicsList = () => {
     const dispatch = useDispatch();
 
     const [comicsList, setComicsList] = useState([]);
-    const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
@@ -46,7 +45,6 @@ const ComicsList = () => {
     },[isStatus])
 
     const onRequest = () => {
-        setNewItemsLoading(isStatus);
         onComicsListLoaded(comicsListQuery);
     }
 
@@ -56,7 +54,6 @@ const ComicsList = () => {
             ended = true;
         }
         setComicsList(comicsList =>comicsList.concat(newComicsList));
-        setNewItemsLoading(isStatus);
         setComicsEnded(ended);
     }
 

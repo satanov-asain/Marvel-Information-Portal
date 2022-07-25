@@ -1,11 +1,9 @@
-import {useState, useMemo} from 'react';
+import {useState, useEffect, useLayoutEffect} from 'react';
 import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {Link} from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSearchChar } from '../../redux/slices/charSlice';
-
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import { fetchSearchChar, charSetSingle} from '../../redux/slices/charSlice';
 
 import './charSearchForm.scss';
 
@@ -15,24 +13,37 @@ const CharSearchForm = () => {
     const {searchCharLoadingStatus, searchCharData} = useSelector(state => state.char);
 
     const [char, setChar] = useState({});
+    const [loadingStatus, setLoadingStatus] = useState('idle');
 
-    const onCharLoaded = (charData) => {
-        setChar(charData);
-    }
+    useEffect(() => {
+        setChar({});
+        setLoadingStatus('idle');
+
+    },[])
+    useLayoutEffect(() => {
+        setChar(searchCharData);
+        setLoadingStatus(searchCharLoadingStatus);
+        return () => {
+            setChar({});
+            setLoadingStatus('idle');
+        }
+    },[searchCharData, searchCharLoadingStatus])
 
     const updateChar = (name) => {
         dispatch(fetchSearchChar(name));
-        if(searchCharData){
-            onCharLoaded(searchCharData);
-            console.log(searchCharData);
-        }
+    }
+    const payload = {
+        data: searchCharData,
+        id: searchCharData.id,
+        status: searchCharLoadingStatus
     }
 
-    const results = Object.keys(searchCharData).length===0 ? null : (Object.keys(searchCharData).length!==0 && searchCharLoadingStatus !== 'error')?
+    const results = Object.keys(char).length===0 ? null : (Object.keys(char).length!==0 && loadingStatus !== 'error')?
                     <div className="char__search-wrapper">
-                        <div className="char__search-success">Найден! Посетить страницу {searchCharData.name}?</div>
-                        <Link to={`/characters/${searchCharData.id}`} className="button button__secondary">
-                            <div className="inner">На страницу</div>
+                        <div className="char__search-success">Найден! Посетить страницу {char.name}?</div>
+                        <Link to={`/characters/${char.id}`} className="button button__secondary">
+                                <div className="inner"
+                                    onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
                         </Link>
                     </div> 
                     :<div className="char__search-error">
@@ -59,11 +70,12 @@ const CharSearchForm = () => {
                             id="charName" 
                             name='charName' 
                             type='text' 
-                            placeholder="Enter name"/>
+                            placeholder="Enter name"
+                            />
                         <button 
                             type='submit' 
                             className="button button__main"
-                            disabled={searchCharLoadingStatus==='loading'}>
+                            disabled={loadingStatus==='loading'}>
                             <div className="inner">найти</div>
                         </button>
                     </div>

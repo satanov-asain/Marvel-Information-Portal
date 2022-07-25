@@ -32,17 +32,26 @@ const initialState = {
     randomCharData:{},
     randomCharId:0, 
     randomCharLoadingStatus:'idle',
-    count:0,
     //state для SearchChar
     searchCharData: {},
     searchCharId:0,
-    searchCharLoadingStatus:'idle'
+    searchCharLoadingStatus:'idle',
+    //state для SingleCharacter
+    singleCharData: {},
+    singleCharId:0,
+    singleCharLoadingStatus:'idle'
 }
 
 const charSlice = createSlice({
     name:'char',
     initialState,
-    reducers: {},
+    reducers: {
+        charSetSingle: (state, action) => {
+            state.singleCharData = action.payload.data;
+            state.singleCharId = action.payload.id;
+            state.singleCharLoadingStatus = action.payload.status;
+        }
+    },
     extraReducers: builder => {
         builder
         //Отработка загрузки для CharInfo
@@ -58,7 +67,7 @@ const charSlice = createSlice({
             state.randomCharLoadingStatus = 'idle';
             state.randomCharData = action.payload;})
         .addCase(fetchRandomChar.rejected, state => {state.randomCharLoadingStatus = 'error'})
-        //Отработка загрузки для RandomChar
+        //Отработка загрузки для SearchChar
         .addCase(fetchSearchChar.pending, state => {state.searchCharLoadingStatus = 'loading';})
         .addCase(fetchSearchChar.fulfilled, (state, action) => {
             state.searchCharLoadingStatus = 'idle';
@@ -72,7 +81,8 @@ const charSlice = createSlice({
     }
 })
 
-const {reducer} = charSlice;
+const {reducer, actions} = charSlice;
+export const {charSetSingle} = actions;
 export default reducer;
 
 
