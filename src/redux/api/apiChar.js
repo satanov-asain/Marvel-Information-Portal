@@ -3,7 +3,7 @@ import { transformChar} from '../../services/MarvelService';
 
 const _apiBase='https://gateway.marvel.com:443/v1/public/';
 const _apiKey='apikey=531082be7ba2891c77469570d4d4606b';
-const _baseOffsetChars=210;
+const _baseOffsetChars=200;
 
 
 export const apiChar = createApi({
