@@ -1,18 +1,17 @@
 import {useState,useEffect, useRef, useMemo} from 'react';
 import store from '../../redux/store'
 import { apiChar } from '../../redux/api/apiChar';
-import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { useDispatch } from 'react-redux/es/exports';
 import { fetchCharInfo} from '../../redux/slices/charSlice';
 import { useGetAllCharactersQuery } from '../../redux/api/apiChar';
 
-import PropTypes from 'prop-types';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
 import setContent  from '../../utils/setContent';
 import './charList.scss';
 
 const getContent = setContent('list');
 
-const CharList=(props)=> {
+const CharList=()=> {
     const dispatch = useDispatch();
 
     const [charList,setCharList]=useState([]);
@@ -80,22 +79,16 @@ const CharList=(props)=> {
                         key={item.id}
                         tabIndex={0}
                         ref={elem=>itemRefs.current[i]=elem}
-                        onClick={()=>{props.onSelectedChar(item.id);
-                                    focusOnItem(i, item.id);}}
+                        onClick={()=>{focusOnItem(i, item.id)}}
                         onKeyPress={(e) => {
-                        if (e.key === ' ' || e.key === "Enter") {
-                            props.onCharSelected(item.id);
-                            focusOnItem(i, item.id);
-                            }
-                        }}                    
-                        >
+                        if (e.key === ' ' || e.key === "Enter") { focusOnItem(i, item.id); }
+                        }}>
                         <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                         <div className="char__name">{item.name}</div>
                     </li>
                 </CSSTransition>
             )
         });
-        // А эта конструкция вынесена для центровки спиннера/ошибки
         return (
             <ul className="char__grid">
                 <TransitionGroup component={null}>
@@ -110,10 +103,6 @@ const CharList=(props)=> {
         
         return (
             <div className="char__list">
-                <button
-                style={{'padding':'20px', 'border':'solid red 5px'}}
-                onClick={()=>{}}
-                >HAPPY</button>
                 {elements}    
                 <button className="button button__main button__long"
                         disabled={isItemsLoading}
@@ -123,10 +112,6 @@ const CharList=(props)=> {
                 </button>
             </div>
         )       
-}
-
-CharList.propTypes={
-    onSelectedChar:PropTypes.func
 }
 
 export default CharList;

@@ -11,7 +11,7 @@ import './charInfo.scss';
 
 const getContent = setContent('single');
 
-const CharInfo = (props) => {
+const CharInfo = () => {
 
     const {charData, charLoadingStatus} = useSelector(state => state.char);
 
@@ -23,7 +23,7 @@ const CharInfo = (props) => {
 
     useEffect(()=>{
             updateCharInfo();
-        },[props.charId, charData])
+    },[charData])
 
     const updateCharInfo=()=>{
         if(!charData){return;}  

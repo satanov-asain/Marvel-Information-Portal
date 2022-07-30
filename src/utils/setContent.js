@@ -2,9 +2,9 @@ import Spinner from '../components/spinner/Spinner';
 import ErrorMessage from '../components/errorMessage/ErrorMessage';
 import Skeleton from '../components/skeleton/Skeleton.js';
 
-const setContent=(amount)=>{
+const setContent=(type)=>{
 
-    switch(amount){
+    switch(type){
         case 'single':
             return(
                 (status, Component, data) => {

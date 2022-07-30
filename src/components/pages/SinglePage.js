@@ -1,8 +1,5 @@
-import { useParams } from 'react-router-dom';
 import { useState, useLayoutEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import useMarvelService from '../../services/MarvelService';
+import { useSelector } from 'react-redux';
 import AppBanner from "../appBanner/AppBanner";
 import setContent from '../../utils/setContent';
 
