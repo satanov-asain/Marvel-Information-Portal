@@ -1,6 +1,5 @@
 import { useState, useEffect, } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import setContent from '../../utils/setContent';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -87,10 +86,6 @@ const View =({data})=>{
             </ul>
         </>
     )
-}
-
-CharInfo.propTypes={
-    charId: PropTypes.number
 }
 
 export default CharInfo;

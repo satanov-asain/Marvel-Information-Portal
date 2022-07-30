@@ -1,0 +1,49 @@
+.notFound {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+}    
+.inner {
+display: block;
+position: relative;
+background: linear-gradient(#000, #262626);
+border-radius: 20px;
+
+img {
+  border-radius: 20px
+}
+
+    &:before,
+    &:after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    background: linear-gradient(45deg, #191970, #0000ff, #00BFFF,#4B0082, #00BFFF, #0000ff);
+    background-size: 500%;
+    z-index: -1;
+    border-radius: 20px;
+    animation: amimate 30s ease infinite;
+    }
+
+    &:after {
+    filter: blur(50px);
+    }
+}
+
+@keyframes amimate {
+0% {
+    background-position: 0 0;
+}
+50% {
+    background-position: 300% 0;
+}
+100% {
+    background-position: 0 0;
+}
+}

@@ -16,7 +16,7 @@ const CharList=()=> {
 
     const [charList,setCharList]=useState([]);
     const [newItemsLoading,setNewItemsLoading]=useState(false);
-    const [offset,setOffset]=useState(210);
+    const [offset,setOffset]=useState(200);
     const [charEnded,setCharEnded]=useState(false);
 
     const {

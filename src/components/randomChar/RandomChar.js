@@ -1,16 +1,10 @@
 import { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage.js';
-import Skeleton from '../skeleton/Skeleton';
-import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRandomChar, fetchSearchChar, charSetSingle } from '../../redux/slices/charSlice';
+import { fetchRandomChar, charSetSingle } from '../../redux/slices/charSlice';
 
 import './randomChar.scss';
-import mjolnir from '../../resources/img/mjolnir.png';
-
 
 const getContent = setContent('single');
 
@@ -59,7 +53,6 @@ const RandomChar=()=>{
                         onClick={updateChar}>
                     <div className="inner">попробуй это</div>
                 </button>
-                <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
             </div>
         </div>
     )
