@@ -1,0 +1,2 @@
+(this.webpackJsonpmarvel=this.webpackJsonpmarvel||[]).push([[10],{253:function(t,e,i){"use strict";i.r(e);var s=i(16),c=i.p+"static/media/notFound.892ab61f.jpg",a=i(1);e.default=function(){return Object(a.jsx)("div",{children:Object(a.jsx)(s.b,{style:{display:"block"},to:"/",children:Object(a.jsx)("img",{src:c,style:{display:"block",margin:"0 auto",height:"35%",width:"35%"}})})})}}}]);
+//# sourceMappingURL=10.2aa16114.chunk.js.map
