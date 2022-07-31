@@ -7,14 +7,14 @@ const getContent = setContent('single');
 
 const SinglePage = ({Component, dataType}) => {
         const {comicData, comicLoadingStatus, comicId} = useSelector(state => state.comic);
-        const {singleCharData, singleCharLoadingStatus, singlecharId} = useSelector(state => state.char);
+        const {singleCharData, singleCharLoadingStatus, singleCharId} = useSelector(state => state.char);
 
         const [data, setData] = useState(null);
         const [status, setStatus] = useState('idle');
 
         useLayoutEffect(() => {
             updateData()
-        }, [comicId, singlecharId])
+        }, [comicId, singleCharId])
 
         const updateData = () => {
             switch (dataType) {
