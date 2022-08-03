@@ -61,10 +61,12 @@ const RandomChar=()=>{
 
 const View = ({data})=>{
     const dispatch = useDispatch()
-    const {randomCharLoadingStatus} = useSelector(state => state.char)
+    const {randomCharLoadingStatus, randomCharId, randomCharData} = useSelector(state => state.char)
     const {name,description,thumbnail,thumbnailName,homepage,wiki, id}=data;
-    const payload = {data, id, status: randomCharLoadingStatus
-    }
+    const payload = {
+        data: randomCharData,
+        id: randomCharId,
+        status: randomCharLoadingStatus}
     let imgStyle=/image_not_available/.test(thumbnail)?
         {'objectFit':'unset'}:{'objectFit':'cover'};
    
@@ -79,8 +81,8 @@ const View = ({data})=>{
             </p>
             <div className="randomchar__btns">
                 <Link to={`/characters/${id}`} className="button button__main">
-                                <div className="inner"
-                                    onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
+                    <div className="inner"
+                        onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
                 </Link>
             </div>
         </div>

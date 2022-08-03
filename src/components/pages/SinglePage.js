@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import AppBanner from "../appBanner/AppBanner";
 import setContent from '../../utils/setContent';
 
-const getContent = setContent('single');
+const getContent = setContent('page');
 
 const SinglePage = ({Component, dataType}) => {
         const {comicData, comicLoadingStatus, comicId} = useSelector(state => state.comic);
@@ -13,7 +13,9 @@ const SinglePage = ({Component, dataType}) => {
         const [status, setStatus] = useState('idle');
 
         useLayoutEffect(() => {
-            updateData()
+            if(comicData || singleCharData){
+                updateData()
+            }
         }, [comicId, singleCharId])
 
         const updateData = () => {

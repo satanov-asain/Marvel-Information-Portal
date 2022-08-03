@@ -1,4 +1,4 @@
-import { useState, useEffect, } from 'react';
+import { useState, useEffect as useLayoutEffect, } from 'react';
 import { Link } from 'react-router-dom';
 import setContent from '../../utils/setContent';
 
@@ -16,11 +16,11 @@ const CharInfo = () => {
 
     const [char,setChar]=useState(null);
 
-    useEffect(()=>{
+    useLayoutEffect(()=>{
         updateCharInfo();
     },[]);
 
-    useEffect(()=>{
+    useLayoutEffect(()=>{
             updateCharInfo();
     },[charData])
 
@@ -43,10 +43,13 @@ const CharInfo = () => {
 const View =({data})=>{
 
     const dispatch = useDispatch();
-    const {charLoadingStatus} = useSelector(state => state.char);
+    const {charLoadingStatus, charId, charData} = useSelector(state => state.char);
     const {name,description,thumbnail,homepage,wiki,comics,id}=data;
 
-    const payload = {data, id, status: charLoadingStatus}
+    const payload = {
+        data: charData,
+        id: charId,
+        status: charLoadingStatus}
     let imgStyle=/image_not_available'/.test(thumbnail)?
         {'objectFit':'contain'}:{'objectFit':'cover'};
     return(
@@ -57,8 +60,8 @@ const View =({data})=>{
                     <div className="char__info-name">{name}</div>
                     <div className="char__btns">
                     <Link to={`/characters/${id}`} className="button button__main">
-                                <div className="inner"
-                                    onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
+                        <div className="inner"
+                            onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
                     </Link>
                     </div>
                 </div>

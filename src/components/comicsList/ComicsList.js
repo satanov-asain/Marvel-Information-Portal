@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { fetchComicInfo } from '../../redux/slices/comicSlice';
 import { useGetAllComicsQuery } from '../../redux/api/apiComic';
 import { Link } from 'react-router-dom';
-import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 import setContent from '../../utils/setContent';
 import './comicsList.scss';
@@ -60,7 +59,6 @@ const ComicsList = () => {
     function renderItems (arr) {
         const items = arr.map((item, i) => {
             return (
-                <CSSTransition key={i} timeout={500} classNames=''>
                     <li className="comics__item" key={i}
                         onClick={() => {dispatch(fetchComicInfo(item.id))}}
                         onKeyPress={(e) => {
@@ -74,14 +72,11 @@ const ComicsList = () => {
                             <div className="comics__item-price">{item.price}</div>
                         </Link>
                     </li>
-                </CSSTransition>
             )
         })
         return (
             <ul className="comics__grid">
-                <TransitionGroup component={null}>
                     {items} 
-                </TransitionGroup>
             </ul>
         )
     }

@@ -29,7 +29,9 @@ const comicSlice = createSlice({
             state.comicData = action.payload;
             state.comicId = action.payload.id;
         })
-        .addCase(fetchComicInfo.rejected, state => {state.comicLoadingStatus = 'error';})
+        .addCase(fetchComicInfo.rejected, state => {
+            state.comicLoadingStatus = 'error';
+            state.comicData = null;})
     }
 })
 

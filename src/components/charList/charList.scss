@@ -1,3 +1,4 @@
+
 @import '../../style/variables.scss';
 
 .char {
@@ -13,11 +14,10 @@
         grid-template-columns: repeat(3, 200px);
         column-gap: 25px;
         row-gap: 30px;
-        
     }
     &__item {
         width: 200px;
-        height: 318px;
+        height: 300px;
         background-color: $dark;
         box-shadow: 5px 5px 10px rgba(0, 0, 0, .25);
         padding: 15px;
@@ -30,15 +30,36 @@
             transform: translate(-15px, -15px);
         }
         &_selected {
-            box-shadow: 0 5px 20px $main-color;
-            transform: translateY(-8px);
+            box-shadow: 0 20px 50px $main-color;
+            transform: translateY(-20px);
+        }
+        &-appear {
+            opacity: 0;
+        }
+        &-active-appear {
+            opacity: 1;
+            transition: opacity 500ms ease-in;
+        }
+        &-enter {
+            opacity: 0;
+        }
+        &-enter-active {
+            opacity: 1;
+            transition: opacity 500ms ease-in;
+        }
+        &-exit {
+            opacity: 1;
+        }
+        &-exit-active {
+            opacity: 0;
+            transition: opacity 500ms ease-in;
         }
     }
     &__name {
         font-weight: bold;
-        font-size: 22px;
-        line-height: 29px;
+        font-size: 20px;
+        line-height: 25px;
         text-transform: uppercase;
         color: #fff;
-    }
+    } 
 }

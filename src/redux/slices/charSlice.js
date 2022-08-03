@@ -60,13 +60,18 @@ const charSlice = createSlice({
             state.charLoadingStatus = 'idle';
             state.charData = action.payload ;
             state.charId = action.payload.id;})
-        .addCase(fetchCharInfo.rejected, state => {state.charLoadingStatus = 'error';} )
+        .addCase(fetchCharInfo.rejected, state => {
+            state.charLoadingStatus = 'error';
+            state.charData = null;} )
         //Отработка загрузки для RandomChar
         .addCase(fetchRandomChar.pending, state => {state.randomCharLoadingStatus = 'loading';})
         .addCase(fetchRandomChar.fulfilled, (state, action) => {
             state.randomCharLoadingStatus = 'idle';
-            state.randomCharData = action.payload;})
-        .addCase(fetchRandomChar.rejected, state => {state.randomCharLoadingStatus = 'error'})
+            state.randomCharData = action.payload;
+            state.randomCharId = action.payload.id;})
+        .addCase(fetchRandomChar.rejected, state => {
+            state.randomCharLoadingStatus = 'error'
+            state.randomCharData = {};})
         //Отработка загрузки для SearchChar
         .addCase(fetchSearchChar.pending, state => {state.searchCharLoadingStatus = 'loading';})
         .addCase(fetchSearchChar.fulfilled, (state, action) => {
