@@ -1,5 +1,6 @@
 # Приложение SPA на тематику персонажей и журналов MARVEL. 
 
+#### Запускать на версии Node.JS 14.16.1
 ### Список задействованных технологий
 - React.js, react-router-dom, react-transition
 - Redux, Redux Toolkit, RTK Query
