@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import useMarvelService from '../../services/MarvelService';
 import setContent from '../../utils/setContent';
@@ -8,6 +8,16 @@ import './charInfo.scss';
 const CharInfo=(props)=>{
     const [char,setChar]=useState(null);
     const {process, setProcess, clearError, getCharacter}=useMarvelService();
+
+    const updateCharInfo = useCallback(()=>{
+        clearError();
+        const {charId}=props;
+        if(!charId){return;}
+        getCharacter(charId)
+        .then(onCharLoaded)
+        .then(()=>setProcess('confirmed'));
+    }, [getCharacter, setProcess, clearError]);
+
     useEffect(()=>{
         updateCharInfo();
     },[]);
@@ -16,14 +26,6 @@ const CharInfo=(props)=>{
             updateCharInfo();
         },[props.charId])
 
-    const updateCharInfo=()=>{
-        clearError();
-        const {charId}=props;
-        if(!charId){return;}
-        getCharacter(charId)
-        .then(onCharLoaded)
-        .then(()=>setProcess('confirmed'));
-    }
 
     const onCharLoaded=(char)=>{
         setChar(char);
