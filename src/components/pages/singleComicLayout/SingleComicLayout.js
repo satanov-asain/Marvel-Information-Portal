@@ -13,10 +13,10 @@ const SingleComicLayout = ({data}) => {
                 <h2 className="single-comic__name">{title}</h2>
                 <p className="single-comic__descr">{description}</p>
                 <p className="single-comic__descr">{pageCount}</p>
-                <p className="single-comic__descr">Language: {language}</p>
+                <p className="single-comic__descr">Язык: {language}</p>
                 <div className="single-comic__price">{price}</div>
             </div>
-            <Link to="/comics" className="single-comic__back">Back to all</Link>
+            <Link to="/comics" className="single-comic__back">Назад ко всем</Link>
         </div>
     )
 }

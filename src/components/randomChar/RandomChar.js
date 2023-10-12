@@ -1,25 +1,19 @@
 import { useState, useEffect} from 'react';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage.js';
-import useMarvelService from '../../services/MarvelService';
+import { Link } from 'react-router-dom';
 import setContent from '../../utils/setContent';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRandomChar, charSetSingle } from '../../redux/slices/charSlice';
+
 import './randomChar.scss';
 
-import mjolnir from '../../resources/img/mjolnir.png';
+const getContent = setContent('single');
 
 const RandomChar=()=>{
-    const [char,setChar]=useState({});
-    const {loading, error, process, setProcess, getCharacter ,clearError}=useMarvelService();
-    
-   
-    const updateChar=()=>{
-        clearError();
-        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
-        getCharacter(id)
-        .then(onCharLoaded)
-        .then(setProcess('confirmed'));
-    }
+    const dispatch = useDispatch();
+    const {randomCharData, randomCharLoadingStatus} = useSelector(state => state.char);
 
+    const [char,setChar]=useState({});
+    
     useEffect(()=>{
         updateChar();
         const timerId = setInterval(updateChar(), 60000);
@@ -28,27 +22,37 @@ const RandomChar=()=>{
         }
     },[]);
 
+    useEffect(() => {
+        onCharLoaded(randomCharData);
+    }, [randomCharData])
+
+   
+    const updateChar=()=>{
+        const id=Math.floor(Math.random()*(1011400-1011000)+1011000);
+        dispatch(fetchRandomChar(id));
+        onCharLoaded(randomCharData);
+    }
+    
     const onCharLoaded=(char)=>{
         setChar(char);
     }
 
     return (
         <div className="randomchar">
-            {setContent(process, View, char)}
+            {getContent(randomCharLoadingStatus, View, char)}
 
             <div className="randomchar__static">
                 <p className="randomchar__title">
-                    Random character for today!<br/>
-                    Do you want to get to know him better?
+                    Случайный персонаж на сегодня!<br/>
+                    Хочешь разузнать о нём по-лучше?
                 </p>
                 <p className="randomchar__title">
-                    Or choose another one
+                    Или выбери кого-нибудь ещё
                 </p>
                 <button className="button button__main"
                         onClick={updateChar}>
-                    <div className="inner">try it</div>
+                    <div className="inner">попробуй это</div>
                 </button>
-                <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
             </div>
         </div>
     )
@@ -56,8 +60,13 @@ const RandomChar=()=>{
 }
 
 const View = ({data})=>{
-    const {name,description,thumbnail,thumbnailName,homepage,wiki}=data;
-    
+    const dispatch = useDispatch()
+    const {randomCharLoadingStatus, randomCharId, randomCharData} = useSelector(state => state.char)
+    const {name,description,thumbnail,thumbnailName,homepage,wiki, id}=data;
+    const payload = {
+        data: randomCharData,
+        id: randomCharId,
+        status: randomCharLoadingStatus}
     let imgStyle=/image_not_available/.test(thumbnail)?
         {'objectFit':'unset'}:{'objectFit':'cover'};
    
@@ -71,12 +80,10 @@ const View = ({data})=>{
                 
             </p>
             <div className="randomchar__btns">
-                <a href={homepage} className="button button__main">
-                    <div className="inner">homepage</div>
-                </a>
-                <a href={wiki} className="button button__secondary">
-                    <div className="inner">Wiki</div>
-                </a>
+                <Link to={`/characters/${id}`} className="button button__main">
+                    <div className="inner"
+                        onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
+                </Link>
             </div>
         </div>
     </div>

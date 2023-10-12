@@ -8,7 +8,9 @@ const ComicsPage=lazy(()=>import('../pages/ComicsPage'));
 const SinglePage=lazy(()=>import('../pages/SinglePage'));
 const SingleCharacterLayout=lazy(()=>import('../pages/singleCharacterLayout/SingleCharacterLayout'));
 const SingleComicLayout=lazy(()=>import('../pages/singleComicLayout/SingleComicLayout'));
+
 const App =()=>{
+
     return (
         <Router>
             <div className="app">
@@ -40,18 +42,4 @@ export default App;
 
 
 
-let myStr = "Satanov was born in Karaganda";
-
-console.log(/karaganda/i.test(myStr));
-
-
-
-function isPallindrom(word){
-    word=word.toLowerCase().replace(/\s/g,'');
-    
-    return console.log(word===word.split('').reverse().join('') ?
-        'Pallindrom':'Not');
-}
-
-isPallindrom("А роза             упала на лапу Азора");
 

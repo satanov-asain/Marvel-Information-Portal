@@ -1,33 +1,33 @@
-import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-
-import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import { useState, useLayoutEffect } from 'react';
+import { useSelector } from 'react-redux';
 import AppBanner from "../appBanner/AppBanner";
 import setContent from '../../utils/setContent';
-// Хотелось бы вынести функцию по загрузке данных как отдельный аргумент
-// Но тогда мы потеряем связь со стэйтами загрузки и ошибки
-// А если вынесем их все в App.js - то они будут одни на все страницы
+
+const getContent = setContent('page');
 
 const SinglePage = ({Component, dataType}) => {
-        const {id} = useParams();
-        const [data, setData] = useState(null);
-        const {loading, error, process, setProcess, getComic, getCharacter, clearError} = useMarvelService();
+        const {comicData, comicLoadingStatus, comicId} = useSelector(state => state.comic);
+        const {singleCharData, singleCharLoadingStatus, singleCharId} = useSelector(state => state.char);
 
-        useEffect(() => {
-            updateData()
-        }, [id])
+        const [data, setData] = useState(null);
+        const [status, setStatus] = useState('idle');
+
+        useLayoutEffect(() => {
+            if(comicData || singleCharData){
+                updateData()
+            }
+        }, [comicId, singleCharId])
 
         const updateData = () => {
-            clearError();
-
             switch (dataType) {
                 case 'comic':
-                    getComic(id).then(onDataLoaded).then(()=>setProcess('confirmed'));
+                    onDataLoaded(comicData);
+                    setStatus(comicLoadingStatus);
                     break;
                 case 'character':
-                    getCharacter(id).then(onDataLoaded).then(()=>setProcess('confirmed'));
+                    onDataLoaded(singleCharData);
+                    setStatus(singleCharLoadingStatus);
+                    break;
             }
         }
 
@@ -38,7 +38,7 @@ const SinglePage = ({Component, dataType}) => {
         return (
             <>
                 <AppBanner/>
-                {setContent(process, Component, data)}
+                {getContent(status, Component, data)}
             </>
         )
 }

@@ -1,56 +1,57 @@
-import { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import useMarvelService from '../../services/MarvelService';
+import { useState, useLayoutEffect, } from 'react';
+import { Link } from 'react-router-dom';
 import setContent from '../../utils/setContent';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { charSetSingle } from '../../redux/slices/charSlice';
+import { fetchComicInfo } from '../../redux/slices/comicSlice';
 
 import './charInfo.scss';
 
-const CharInfo=(props)=>{
+const getContent = setContent('single');
+
+const CharInfo = () => {
+
+    const {charData, charLoadingStatus} = useSelector(state => state.char);
+
     const [char,setChar]=useState(null);
-    const {process, setProcess, clearError, getCharacter}=useMarvelService();
 
-    const updateCharInfo = useCallback(()=>{
-        clearError();
-        const {charId}=props;
-        if(!charId){return;}
-        getCharacter(charId)
-        .then(onCharLoaded)
-        .then(()=>setProcess('confirmed'));
-    }, [getCharacter, setProcess, clearError]);
-
-    useEffect(()=>{
-        updateCharInfo();
-    },[]);
-
-    useEffect(()=>{
-            updateCharInfo();
-        },[props.charId])
-
-
+    
     const onCharLoaded=(char)=>{
         setChar(char);
     }
     
-    // const skeleton=char||error||loading? null:<Skeleton/>;
-    // const errorMessage=error?<ErrorMessage/>:null;
-    // const spinner = loading?<Spinner/>:null;
-    // const content = (!error&&!loading)&&char?<View char={char}/>:null;
+    const updateCharInfo=()=>{
+        if(!charData){return;}  
+        onCharLoaded(charData);      
+    }
+
+    useLayoutEffect(()=>{
+        updateCharInfo();
+    },[]);
+
+    useLayoutEffect(()=>{
+            updateCharInfo();
+    },[charData])
+
 
     return (
         <div className="char__info">
-            {setContent(process, View, char)}
-            {/* {skeleton}
-            {errorMessage}
-            {spinner}
-            {content} */}
+            {getContent(charLoadingStatus, View, char)}
         </div>
     )
-
 }
 
 const View =({data})=>{
 
-    const {name,description,thumbnail,homepage,wiki,comics}=data;
+    const dispatch = useDispatch();
+    const {charLoadingStatus, charId, charData} = useSelector(state => state.char);
+    const {name,description,thumbnail,homepage,wiki,comics,id}=data;
+
+    const payload = {
+        data: charData,
+        id: charId,
+        status: charLoadingStatus}
     let imgStyle=/image_not_available'/.test(thumbnail)?
         {'objectFit':'contain'}:{'objectFit':'cover'};
     return(
@@ -60,27 +61,29 @@ const View =({data})=>{
                 <div>
                     <div className="char__info-name">{name}</div>
                     <div className="char__btns">
-                        <a href={homepage} className="button button__main">
-                            <div className="inner">homepage</div>
-                        </a>
-                        <a href={wiki} className="button button__secondary">
-                            <div className="inner">Wiki</div>
-                        </a>
+                    <Link to={`/characters/${id}`} className="button button__main">
+                        <div className="inner"
+                            onClick={() => {dispatch(charSetSingle(payload))}}>На страницу</div>
+                    </Link>
                     </div>
                 </div>
             </div>
             <div className="char__descr">
                 {description}
             </div>
-            <div className="char__comics">Comics:</div>
+            <div className="char__comics">Комиксы:</div>
             <ul className="char__comics-list">
                 {comics.length>0?null:"К сожалению комиксы по данному персонажу отсутсвуют"}
                 {
                     comics.map((item,i)=>{
                         if(i>9) return;
+                        let comicId = item.resourceURI.split('/').splice(-1);
                         return(
                         <li className="char__comics-item" key ={i}>
-                            {item.name}
+                            <Link to={`/comics/${id}`} className="">
+                                <div className="inner"
+                                    onClick={() => {dispatch(fetchComicInfo(comicId))}}>{item.name}</div>
+                            </Link>
                         </li>
                         )
                     })
@@ -88,10 +91,6 @@ const View =({data})=>{
             </ul>
         </>
     )
-}
-
-CharInfo.propTypes={
-    charId: PropTypes.number
 }
 
 export default CharInfo;

@@ -1,70 +1,58 @@
-# Getting Started with Create React App
+# Приложение SPA на тематику персонажей и журналов MARVEL. 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#### Запускать на версии Node.JS 14.16.1
+### Список задействованных технологий
+- React.js, react-router-dom, react-transition
+- Redux, Redux Toolkit, RTK Query
+- CSS modules, Styled Components, Grid CSS
 
-## Available Scripts
+#### Ссылка https://marvel-satanov.herokuapp.com/
 
-In the project directory, you can run:
+### О приложении
+Основная идея приложения - отображать для пользователя информацию о персонажах и журналах, данные которых приходят по совершаемым в реальном времени запросам с удаленного сервера.
+Данное приложение представляет собой **_single page application_**, где UI часть реализована на **_React_**, управление глобальным сосотоянием на **_Redux_** и смежных инструментах. Взаимодействие происходит с сторонним открытым API, предоставляемым киностудией Marvel. 
+Информация может быть предоставлена в виде страниц со списками(пагинацией), в виде страниц отдельных элементов, по результатам поиска персонажа.
 
-### `yarn start`
+### Общие технические детали
+- Построено взаимодействие с последующей обработкой и отображением данных по открытому Mavrel API с базами данных данной киностудии. 
+- Реализована маршрутизация по порталу без перезагрузок(react-router-dom)
+- Задейстовано внешнее глобальное хранилище на библиотеке Redux. 
+- Реализована пагинация удаленных данных через RTK Query.
+- Реализованы утилиты получения данных, условного рендеринга в зависимости от типа страницы приложения.
+- На странице MainPage.js все компоненты обернуты в ErrorBoundary.js
+- В App.js страницы приложения подгружаются лениво, посредством React.lazy & Suspense
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Структура UI части.
+Приложение представлено страницами: MainPage, ComicPage, SinglePage(и для комиксов и для персонажей), 404.
+#### Подробнее о MainPage. 
+Состоит из компонентов: 
+- RandomChar: каждые 60 секунд или по клику запрашивается случайный персонаж по случайному сгенерированному ID. Можно перейти на страницу персонажа.
+- CharList: порционно по 9 элементов отображаются приходящие c Marvel API персонажи. Присутствует Пагинация - подгрузка персонажей по клику. Нажав на любого персонажа, в боковой панели выведится информация о нем. Для анимации карточек задействована библиотека React Transition. 
+Для порционного запроса данных используется хук UseGetAllCharactersQuery из apiChar. Хук при каждом изменении state _offset_ запрашивает новую порцию персонажей.
+При размонтировании компонента, происходит очищение кэша apiChar - _store.dispatch(myApi.utils.resetApiState())_. Притом изменяется переменная _isStatus_, и если она _CONFIRMED_ - начинается новый рендер.
+- CharInfo: боковая панель, отображающая информацию о выбранном персонаже. Информация запрашивается по Marvel API когда пользователь кликает по соответствующему персонажу в CharList. Информация: имя, краткое описание(не более 210 символов), а также список комиксов(нажав на любой из них, перейдете на страницу соответствующего комикса).
+- CharSearchForm: задейстованы Formik и Yup библиотеки. Это форма по поиску желаемого персонажа в БД Marvel API. Если персонаж найден - будет предложено перейти на страницу о нем. В ином случае будет сообщено об его отсутствии. 
+#### Подробнее о ComicPage
+Страница со списком карточек комиксов. Имеется пагинация. Данные для карточек приходят по Marvel API. По нажатию на любую из карточек, по ID запросятся данные о комиксе и пользователь перейдет на сгенерированную страницу.
+Для порционного запроса данных используется хук UseGetAllComicsQuery из apiComic. Хук при каждом измении state _offset_ запрашивает новую порцию комиксов. Притом изменяется переменная _isStatus_, и если она _CONFIRMED_ - начинается новый рендер.
+При размонтировании компонента, происходит очищение кэша apiComic - _store.dispatch(myApi.utils.resetApiState())_.
+#### Подробнее о SinglePage
+В приложении можно перейти на кастомно сгенерированную страницу с информацией о Персонаже, или Комиксе. В силу повторяющегося схожего функционала компонентов - сделан один логический компонент для условного рендера обеих из страниц.
+В useLayoutEffect ожидаются измения одного из двух ID, далее происходит обновление локального State вызванными из Store данными. 
+Данные приходят с Store(с слайсов CharClice & ComicSlice). Для условного рендера применен кастомный getContent.
+Для Single Character Page такая деталь - state-ы для других компонентов, связанных с CharSlice, не должны пересекаться с той частью Store предназначенной для Page. 
+Решение - при нажатии _ПЕРЕЙТИ НА СТРАНИЦУ_ вызывать Action, который передаст данные с текущего компонента, где была нажата кнопака, в часть Store Single Page Character.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Структура работы Redux и составляющих.
+Задейстованы Redux Toolkit, RTK Query
+- CharSlice. Содержит данные для компонентов CharInfo, RandomChar, CharSearchForm, а также для Single Character Page. Задейстованы _CreateAsyncThunk_ для асинхронных запросов по ID или Name к Marvel API. 
+- ComicSlice. Содержит данные для Single Comic Page. Данные используются в Single Comic Page.
+- _apiChar & apiComic на RTK Query_ - предназначены для порционного запроса данных для списков. При получении данных, в transformResponse обрабатываются для последующего использования кастомной transform функцией. Соответствующие хуки принимают аргумент offset.
+### Утилиты и Сервисы
+#### Утитита SetContent для условного рендеринга компонентов, страниц.
+В зависимости от ситуации, setContent применяется для Case-ов : single , list , page. SetContent на основе имеющихяся условий может отрендерить: Component, Skeleton, Spinner или ErrorMessage 
+#### Сервис MarvelService 
+- Предоставляет функции для фетчинга(запроса) данных, и функции обработки запрошенных данных. 
+- Функции запроса данных, фетчинга применяются в CharSlice & ComicSlice для CreateAsyncThunk.
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Благодарю за прочтение.
